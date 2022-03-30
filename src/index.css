@@ -1,8 +1,8 @@
 body {
-  margin: 0;
   font-family: 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
 }
 
 code {
@@ -14,4 +14,8 @@ code {
   position: relative;
   height: 100vh;
   width: 100vw;
+}
+
+div[contenteditable]:focus, input:focus, select:focus, textarea:focus {
+  outline: none;
 }
