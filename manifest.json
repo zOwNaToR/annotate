@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Annotate 2",
+  "name": "Annotate",
   "version": "1.0.0",
   "action": {
     "default_popup": "index.html"
