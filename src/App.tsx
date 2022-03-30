@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import AnnotationContainer from './components/annotation-container/AnnotationContainer';
 import Grid from './components/grid/Grid';
-import React, { useState } from 'react';
 import LayoutSelector from './components/layout-selector/LayoutSelector';
 
 function App() {
