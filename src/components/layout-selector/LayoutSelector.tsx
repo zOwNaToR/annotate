@@ -1,5 +1,4 @@
 import React from 'react';
-import optionNumber from '../annotation-container/AnnotationContainer';
 import GridSelector from './components/GridSelector';
 
 export interface ILayoutSelectorProps {

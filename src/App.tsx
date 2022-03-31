@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import AnnotationContainer from './components/annotation-container/AnnotationContainer';
 import Grid from './components/grid/Grid';
 import LayoutSelector from './components/layout-selector/LayoutSelector';
 
