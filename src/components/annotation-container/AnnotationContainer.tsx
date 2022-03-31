@@ -1,23 +1,23 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useRef, useState } from 'react';
 import classes from './styles.module.css';
+import { ANNOTATION_CONTAINER_KEY, COLUMN_POSITION } from './constants';
+import ContentEditable from '../content-editable/ContentEditable';
+import { useLocalStorageWithRef } from '../../hooks/useLocalStorageWithRef';
 
 export interface IAnnotationContainerProps {
-
+  position: COLUMN_POSITION;
 }
 
-const AnnotationContainer: React.VFC<IAnnotationContainerProps> = ({  }) => {
-	// useState hook
-	const [html, setHtml] = useState('');
+const AnnotationContainer: React.VFC<IAnnotationContainerProps> = ({ position }) => {
+  const [html, setHtml] = useLocalStorageWithRef(`${ANNOTATION_CONTAINER_KEY}_${position}`, '');
 
-	const handleChange = (e: FormEvent<HTMLDivElement>) => {
-		setHtml(e.currentTarget.innerHTML);
-	}
+  const handleChange = (newValue: string) => {
+    setHtml(newValue);
+  };
 
-	return (
-		<div contentEditable suppressContentEditableWarning onChange={handleChange} className={classes.container}>
-			{html}
-		</div>
-	);
-}
+  return (
+    <ContentEditable onChange={handleChange} className={classes.annotationContainer} html={html} />
+  );
+};
 
 export default AnnotationContainer;
