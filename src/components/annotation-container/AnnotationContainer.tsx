@@ -1,4 +1,4 @@
-import React, { FormEvent, useRef, useState } from 'react';
+import React from 'react';
 import classes from './styles.module.css';
 import { ANNOTATION_CONTAINER_KEY, COLUMN_POSITION } from './constants';
 import ContentEditable from '../content-editable/ContentEditable';
