@@ -1,8 +1,8 @@
 import React from 'react';
 import classes from './styles.module.css';
 import { ANNOTATION_CONTAINER_KEY, COLUMN_POSITION } from './constants';
-import ContentEditable from '../content-editable/ContentEditable';
-import { useLocalStorageWithRef } from '../../hooks/useLocalStorageWithRef';
+import ContentEditable from '@/components/content-editable/ContentEditable';
+import { useLocalStorageWithRef } from '@/hooks/useLocalStorageWithRef';
 
 export interface IAnnotationContainerProps {
   position: COLUMN_POSITION;

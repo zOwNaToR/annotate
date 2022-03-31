@@ -10,7 +10,7 @@ export interface ITheme {
   values: IThemeValues;
 }
 
-export interface IThemeValues {
+interface IThemeValues {
   fontFamily: string;
   fontSize: string;
   backgroundColor: string;

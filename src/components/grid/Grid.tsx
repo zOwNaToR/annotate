@@ -1,9 +1,9 @@
 import React from 'react';
-import classes from './styles.module.css';
-import AnnotationContainer from '../annotation-container/AnnotationContainer';
+import AnnotationContainer from '@/components/annotation-container/AnnotationContainer';
+import { COLUMN_POSITION } from '@/components/annotation-container/constants';
+import { createArray } from '@/utils/utils';
 import { GridNumberToPositionMapType } from './types';
-import { COLUMN_POSITION } from '../annotation-container/constants';
-import { createArray } from '../../utils/utils';
+import classes from './styles.module.css';
 
 export interface IGridProps {
   columns: number;

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Grid from '@/components/grid/Grid';
 import LayoutSelector from '@/components/layout-selector/LayoutSelector';
-import { ThemeContext } from '@/context/theme/theme';
-import { ITheme } from '@/context/theme/types';
-import { LIGHT_THEME } from '@/context/theme/constants';
+import { ThemeContext, ITheme, LIGHT_THEME } from '@/context/theme';
 
 function App() {
   const [theme, setTheme] = useState<ITheme>(LIGHT_THEME);
