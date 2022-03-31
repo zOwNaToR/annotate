@@ -13,11 +13,7 @@ function App() {
         onLayoutChange={(columnOption) => setColumnsNumber(columnOption)}
       />
 
-      <Grid columns={columnsNumber}>
-        {[...Array(columnsNumber).keys()].map((el, index) => (
-          <AnnotationContainer key={index} />
-        ))}
-      </Grid>
+      <Grid columns={columnsNumber} />
     </div>
   );
 }
