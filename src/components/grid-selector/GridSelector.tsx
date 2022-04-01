@@ -1,4 +1,5 @@
 import React from 'react';
+import classes from 'styles.module.css';
 
 interface GridSelectorProps {
   colNumber: number;
@@ -7,7 +8,7 @@ interface GridSelectorProps {
 
 const GridSelector: React.VFC<GridSelectorProps> = ({ colNumber, onClick }) => {
   return (
-    <span style={{ cursor: 'pointer', padding: '5px' }} onClick={() => onClick(colNumber)}>
+    <span className={classes.gridSelector} onClick={() => onClick(colNumber)}>
       {colNumber}
     </span>
   );
