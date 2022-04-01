@@ -1,19 +1,32 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { ITheme, LIGHT_THEME, ThemeContext } from '@/context/theme';
 import { DARK_THEME } from '@/context/theme/constants';
 
 export const useTheme = () => {
   const { theme, setTheme } = useContext(ThemeContext);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme((prev) => getOppositeTheme(prev));
-  };
+  }, []);
 
-  const getOppositeTheme = (currentTheme?: ITheme) => {
-    currentTheme ??= theme;
+  const getOppositeTheme = useCallback(
+    (currentTheme?: ITheme) => {
+      currentTheme ??= theme;
 
-    return currentTheme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME;
-  };
+      return currentTheme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME;
+    },
+    [theme],
+  );
+
+  // const toggleTheme = () => {
+  //   setTheme((prev) => getOppositeTheme(prev));
+  // };
+
+  // const getOppositeTheme = (currentTheme?: ITheme) => {
+  //   currentTheme ??= theme;
+  //
+  //   return currentTheme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME;
+  // };
 
   return [theme, setTheme, toggleTheme, getOppositeTheme] as const;
 };
