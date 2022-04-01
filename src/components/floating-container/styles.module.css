@@ -1,0 +1,10 @@
+.floatingContainer {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    display: flex;
+    padding: 10px;
+    background-color: lightgray;
+    border-radius: 10px;
+}

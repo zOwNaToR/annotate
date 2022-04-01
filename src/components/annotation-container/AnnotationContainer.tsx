@@ -23,7 +23,7 @@ const AnnotationContainer: React.VFC<IAnnotationContainerProps> = ({ position })
       <ContentEditable
         onChange={handleChange}
         html={html}
-        style={{ ...convertThemeToCssInJs(theme) }}
+        style={{ ...convertThemeToCssInJs(theme), height: '100%', padding: 16 }}
       />
     </div>
   );

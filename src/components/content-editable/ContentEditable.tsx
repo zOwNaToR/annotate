@@ -20,7 +20,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, sty
   };
 
   useEffect(() => {
-    // On first rendering and if innerHtml is present, skip
+    // Set html only after first render and if html is not already set
     if (!divRef.current || divRef.current.innerHTML) return;
 
     divRef.current.innerHTML = html;
@@ -28,7 +28,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, sty
 
   return (
     <div
-      style={style}
+      style={{ ...style, overflowY: 'auto' }}
       contentEditable
       suppressContentEditableWarning
       ref={divRef}

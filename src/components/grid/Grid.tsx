@@ -4,6 +4,7 @@ import { COLUMN_POSITION } from '@/components/annotation-container/constants';
 import { createArray } from '@/utils/utils';
 import { GridNumberToPositionMapType } from './types';
 import classes from './styles.module.css';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface IGridProps {
   columns: number;
@@ -15,8 +16,16 @@ const mapColNumberToGridPosition: GridNumberToPositionMapType = {
 };
 
 const Grid: React.VFC<IGridProps> = ({ columns }) => {
+  const [theme] = useTheme();
+
   return (
-    <div className={classes.grid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+    <div
+      className={classes.grid}
+      style={{
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        backgroundColor: theme.values.dividerColor,
+      }}
+    >
       {createArray(columns, 1).map((colNum) => (
         <AnnotationContainer key={colNum} position={mapColNumberToGridPosition[colNum]} />
       ))}

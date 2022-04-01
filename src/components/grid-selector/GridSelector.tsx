@@ -7,7 +7,7 @@ interface GridSelectorProps {
 
 const GridSelector: React.VFC<GridSelectorProps> = ({ colNumber, onClick }) => {
   return (
-    <span style={{ cursor: 'pointer' }} onClick={() => onClick(colNumber)}>
+    <span style={{ cursor: 'pointer', padding: '5px' }} onClick={() => onClick(colNumber)}>
       {colNumber}
     </span>
   );
