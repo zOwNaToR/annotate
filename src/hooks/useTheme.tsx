@@ -18,15 +18,5 @@ export const useTheme = () => {
     [theme],
   );
 
-  // const toggleTheme = () => {
-  //   setTheme((prev) => getOppositeTheme(prev));
-  // };
-
-  // const getOppositeTheme = (currentTheme?: ITheme) => {
-  //   currentTheme ??= theme;
-  //
-  //   return currentTheme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME;
-  // };
-
   return [theme, setTheme, toggleTheme, getOppositeTheme] as const;
 };
