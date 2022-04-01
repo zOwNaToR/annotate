@@ -3,6 +3,7 @@ import Grid from '@/components/grid/Grid';
 import { ITheme, LIGHT_THEME, ThemeContext } from '@/context/theme';
 import FloatingContainer from '@/components/floating-container/FloatingContainer';
 import GridSelector from '@/components/grid-selector/GridSelector';
+import ThemeToggle from '@/components/theme-toggler/ThemeToggle';
 
 const columnOptionsArray = [1, 2];
 
@@ -14,13 +15,17 @@ function App() {
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <div className="App">
         <FloatingContainer>
-          {columnOptionsArray.map((columnOption) => (
-            <GridSelector
-              key={columnOption}
-              colNumber={columnOption}
-              onClick={() => setColumnsNumber(columnOption)}
-            />
-          ))}
+          <div>
+            {columnOptionsArray.map((columnOption) => (
+              <GridSelector
+                key={columnOption}
+                colNumber={columnOption}
+                onClick={() => setColumnsNumber(columnOption)}
+              />
+            ))}
+          </div>
+
+          <ThemeToggle />
         </FloatingContainer>
 
         <Grid columns={columnsNumber} />
