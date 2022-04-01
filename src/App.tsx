@@ -9,7 +9,7 @@ function App() {
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      <div className="App" style={{ color: 'white', fontSize: '18px' }}>
+      <div className="App">
         <LayoutSelector
           columnOptionsArray={[1, 2]}
           onLayoutChange={(columnOption) => setColumnsNumber(columnOption)}

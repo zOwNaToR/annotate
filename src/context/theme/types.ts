@@ -15,4 +15,6 @@ interface IThemeValues {
   fontSize: string;
   backgroundColor: string;
   color: string;
+  colorSecondary: string;
+  dividerColor: string;
 }
