@@ -23,3 +23,5 @@ export const DARK_THEME: ITheme = {
     dividerColor: 'rgba(255, 255, 255, 0.12)',
   },
 };
+
+export const UnmappedCssInJsThemeProperties = ['colorSecondary', 'dividerColor'];

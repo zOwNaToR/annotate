@@ -4,9 +4,4 @@
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   grid-gap: 1rem;
-  background-color: black;
-}
-
-.grid > div {
-  background-color: #1d1f21;
 }

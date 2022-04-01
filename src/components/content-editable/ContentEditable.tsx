@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 
 export interface IContentEditableProps {
   html: string;
   onChange: (value: string) => void;
-  className?: string;
+  style?: CSSProperties;
 }
 
-const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, className }) => {
+const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, style }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const lastHtml = useRef<string>('');
 
@@ -28,9 +28,9 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, cla
 
   return (
     <div
+      style={style}
       contentEditable
       suppressContentEditableWarning
-      className={className ?? ''}
       ref={divRef}
       onInput={emitChange}
       dangerouslySetInnerHTML={{ __html: html }}

@@ -3,6 +3,8 @@ import classes from './styles.module.css';
 import { ANNOTATION_CONTAINER_KEY, COLUMN_POSITION } from './constants';
 import ContentEditable from '@/components/content-editable/ContentEditable';
 import { useLocalStorageWithRef } from '@/hooks/useLocalStorageWithRef';
+import { useTheme } from '@/hooks/useTheme';
+import { convertThemeToCssInJs } from '@/utils/utils';
 
 export interface IAnnotationContainerProps {
   position: COLUMN_POSITION;
@@ -10,13 +12,20 @@ export interface IAnnotationContainerProps {
 
 const AnnotationContainer: React.VFC<IAnnotationContainerProps> = ({ position }) => {
   const [html, setHtml] = useLocalStorageWithRef(`${ANNOTATION_CONTAINER_KEY}_${position}`, '');
+  const [theme] = useTheme();
 
   const handleChange = (newValue: string) => {
     setHtml(newValue);
   };
 
   return (
-    <ContentEditable onChange={handleChange} className={classes.annotationContainer} html={html} />
+    <div className={classes.annotationContainer}>
+      <ContentEditable
+        onChange={handleChange}
+        html={html}
+        style={{ ...convertThemeToCssInJs(theme) }}
+      />
+    </div>
   );
 };
 
