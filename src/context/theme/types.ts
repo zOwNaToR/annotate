@@ -11,8 +11,8 @@ export interface ITheme {
 }
 
 interface IThemeValues {
-  fontFamily: string;
-  fontSize: string;
+  fontFamily?: string;
+  fontSize?: string;
   backgroundColor: string;
   color: string;
   colorSecondary: string;

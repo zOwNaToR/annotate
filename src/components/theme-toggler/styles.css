@@ -29,7 +29,6 @@
 }
 
 .toggleCircle {
-    content: "";
     display: block;
     height: 25px;
     width: 25px;

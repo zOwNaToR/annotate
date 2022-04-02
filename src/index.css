@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  font-family: 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: RobotoSlab, -apple-system, Poppins, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
@@ -25,4 +25,8 @@ code {
 
 div[contenteditable]:focus, input:focus, select:focus, textarea:focus {
   outline: none;
+}
+
+img::selection {
+  background: transparent;
 }

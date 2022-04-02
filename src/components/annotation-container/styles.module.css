@@ -1,4 +1,5 @@
 .annotationContainer {
   position: relative;
   overflow: hidden;
+  font-size: 18px;
 }
