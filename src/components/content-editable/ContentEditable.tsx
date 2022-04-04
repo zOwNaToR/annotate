@@ -10,7 +10,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, sty
   const divRef = useRef<HTMLDivElement>(null);
   const lastHtml = useRef<string>('');
 
-  const emitChange = () => {
+  const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const curHtml = divRef.current?.innerHTML ?? '';
     if (curHtml !== lastHtml.current) {
       onChange(curHtml);
@@ -32,7 +32,8 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, sty
       contentEditable
       suppressContentEditableWarning
       ref={divRef}
-      onInput={emitChange}
+      // onKeyDown={handleInput}
+      onBeforeInput={handleInput}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
