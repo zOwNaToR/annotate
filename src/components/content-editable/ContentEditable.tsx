@@ -1,4 +1,6 @@
-import React, { CSSProperties, useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import { Row, RowSelections } from '@/components/content-editable/types';
+import { onInputLogic } from '@/components/content-editable/logic';
 
 export interface IContentEditableProps {
   html: string;
@@ -10,14 +12,25 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, sty
   const divRef = useRef<HTMLDivElement>(null);
   const lastHtml = useRef<string>('');
 
-  const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const curHtml = divRef.current?.innerHTML ?? '';
-    if (curHtml !== lastHtml.current) {
-      onChange(curHtml);
-    }
+  const [contentStructure, setContentStructure] = useState<Row[]>([
+    {
+      key: 'first',
+      text: '',
+    },
+  ]);
 
-    lastHtml.current = html;
+  const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // const curHtml = divRef.current?.innerHTML ?? '';
+    // if (curHtml !== lastHtml.current) {
+    //   onChange(curHtml);
+    // }
+    //
+    // lastHtml.current = html;
+
+    setContentStructure(onInputLogic(e, contentStructure));
   };
+
+  const handleShortcut = () => {};
 
   useEffect(() => {
     // Set html only after first render and if html is not already set
@@ -32,10 +45,16 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, sty
       contentEditable
       suppressContentEditableWarning
       ref={divRef}
-      // onKeyDown={handleInput}
+      onKeyDown={handleShortcut}
       onBeforeInput={handleInput}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+      // dangerouslySetInnerHTML={{ __html: html }}
+    >
+      {contentStructure.map((row, index) => (
+        <div key={row.key} data-key={row.key} style={{ whiteSpace: 'nowrap' }}>
+          {row.text}
+        </div>
+      ))}
+    </div>
   );
 };
 

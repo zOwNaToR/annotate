@@ -1,70 +1,59 @@
-import { KeyMap, RowSelections } from '@/components/content-editable/types';
+import {
+  KeyMap,
+  PartialRowSelection,
+  Row,
+  RowSelections,
+} from '@/components/content-editable/types';
 import { KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import React from 'react';
 
+const getRowElementByKey = (key: string): HTMLElement | null => {
+  return document.querySelector(`div[data-key='${key}']`);
+};
 // TODO Check if it is possible to replace this logic with with closest() function
-const getRowElementKey = (htmlNode: Node): string => {
-  if (!htmlNode.parentElement) throw Error('No parent element');
+const getClosestRowElement = (htmlNode: Node): HTMLElement => {
+  if (!htmlNode.parentElement) return document.querySelector('div[data-key]')!;
 
-  if (htmlNode.parentElement.hasAttribute('data-key'))
-    return htmlNode.parentElement.getAttribute('data-key')!;
+  if (htmlNode.parentElement.hasAttribute('data-key')) return htmlNode.parentElement!;
 
-  return getRowElementKey(htmlNode.parentElement);
+  return getClosestRowElement(htmlNode.parentElement);
 };
 
 const shouldPreventDefault = ({ preventDefault }: KeyMap, ctrlKey: boolean, shiftKey: boolean) => {
   return typeof preventDefault === 'boolean' ? preventDefault : preventDefault(ctrlKey, shiftKey);
 };
 
-export const handleInput = (
-  e: React.KeyboardEvent<HTMLDivElement>,
-  currentState: RowSelections,
-) => {
-  if (!(e.key in KEY_ACTION_MAP)) return;
+export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]) => {
+  const selectedRows = getSelectedRows(currentRows);
+  // TODO Remove selectedRows
+
+  const newRows = [...currentRows];
+  // @ts-ignore
+  newRows.find((x) => x.key === Object.keys(selectedRows)[0])!.text += e.data;
+  e.preventDefault();
+
+  if (!(e.key in KEY_ACTION_MAP)) return newRows;
 
   const keyMap = KEY_ACTION_MAP[e.key];
   const { ctrlKey, shiftKey } = e;
 
-  if (shouldPreventDefault(keyMap, ctrlKey, shiftKey)) e.preventDefault();
-
-  const selection = getSelection(currentState);
+  // if (shouldPreventDefault(keyMap, ctrlKey, shiftKey)) e.preventDefault();
 
   const htmlActionResult = keyMap.action(ctrlKey, shiftKey);
+
+  return newRows;
 };
 
-const getSelection = (currentState: RowSelections) => {
-  const selection = window.getSelection();
-  if (!selection || !selection.focusNode) return null;
+const getSelectedRows = (currentRows: Row[]): RowSelections => {
+  const selection = window.getSelection()!;
 
-  if (selection.type === 'Caret') {
-    return getCaretSelection(selection);
-  }
-
-  return getRangeSelection(selection, currentState);
-};
-
-const getCaretSelection = (selection: Selection): RowSelections => {
-  const rowElementKey = getRowElementKey(selection.focusNode!);
-
-  return {
-    [rowElementKey]: {
-      node: selection.focusNode!,
-      isStartingRow: true,
-      isMiddleRow: false,
-      isEndingRow: true,
-      startColumn: selection.focusOffset,
-      endColumn: selection.anchorOffset,
-    },
-  };
-};
-
-const getRangeSelection = (selection: Selection, currentState: RowSelections): RowSelections => {
   const isOnlyOneRow = selection.focusNode === selection.anchorNode;
 
-  if (isOnlyOneRow) {
+  if (selection.type === 'Caret' || isOnlyOneRow) {
+    const rowElement = getClosestRowElement(selection.focusNode!);
     return {
-      [getRowElementKey(selection.focusNode!)]: {
-        node: selection.focusNode!,
+      [rowElement.getAttribute('data-key')!]: {
+        node: rowElement!,
         isStartingRow: true,
         isMiddleRow: false,
         isEndingRow: true,
@@ -74,22 +63,56 @@ const getRangeSelection = (selection: Selection, currentState: RowSelections): R
     };
   }
 
-  return Object.keys(currentState).reduce((acc, curr) => {
-    const row = currentState[curr];
+  return currentRows.reduce((acc, curr) => {
+    const row = getRowElementByKey(curr.key);
 
-    if (selection.containsNode(row.node, true)) {
-      const isStartingRow = selection.focusNode === row.node;
-      const isEndingRow = selection.anchorNode === row.node;
-      acc[curr] = {
-        ...row,
+    if (!row) return acc;
+
+    if (selection.containsNode(row)) {
+      const isStartingRow = selection.focusNode === row;
+      const isEndingRow = selection.anchorNode === row;
+
+      const rowInfo: PartialRowSelection = {
+        node: row,
         isStartingRow,
         isEndingRow,
         isMiddleRow: !isStartingRow && !isEndingRow,
+      };
+
+      return {
+        ...acc,
+        [curr.key]: {
+          ...fillPartialRow(rowInfo, selection),
+        },
       };
     }
 
     return acc;
   }, {} as RowSelections);
+};
+
+const fillPartialRow = (row: PartialRowSelection, selection: Selection) => {
+  if (row.isStartingRow) {
+    return {
+      ...row,
+      startColumn: selection.focusOffset,
+      endColumn: row.node.textContent?.length ?? 0,
+    };
+  }
+
+  if (row.isEndingRow) {
+    return {
+      ...row,
+      startColumn: 0,
+      endColumn: selection.anchorOffset,
+    };
+  }
+
+  return {
+    ...row,
+    startColumn: 0,
+    endColumn: row.node.textContent?.length ?? 0,
+  };
 };
 
 /*

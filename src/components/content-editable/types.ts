@@ -1,3 +1,5 @@
+import { PartialBy } from '@/utils/types';
+
 export interface ICaretPosition {
   row: number;
   column: number;
@@ -23,4 +25,10 @@ export type RowSelections = {
     startColumn: number;
     endColumn: number;
   };
+};
+export type PartialRowSelection = PartialBy<RowSelections['key'], 'startColumn' | 'endColumn'>;
+
+export type Row = {
+  key: string;
+  text: string;
 };
