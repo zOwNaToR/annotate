@@ -8,7 +8,7 @@ import './styles.css';
 export interface IThemeToggle {}
 
 const ThemeToggle: React.VFC<IThemeToggle> = ({}) => {
-  const [theme, setTheme, toggleTheme, getOppositeTheme] = useTheme();
+  const [theme, , toggleTheme, getOppositeTheme] = useTheme();
   const isDarkMode = theme === DARK_THEME;
 
   const handleClick = () => {

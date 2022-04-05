@@ -11,18 +11,20 @@ export interface IAnnotationContainerProps {
 }
 
 const AnnotationContainer: React.VFC<IAnnotationContainerProps> = ({ position }) => {
-  const [html, setHtml] = useLocalStorageWithRef(`${ANNOTATION_CONTAINER_KEY}_${position}`, '');
+  const [htmlStructure, setHtmlStructure] = useLocalStorageWithRef(
+    `${ANNOTATION_CONTAINER_KEY}_${position}`,
+    '',
+  );
   const [theme] = useTheme();
 
   const handleChange = (newValue: string) => {
-    setHtml(newValue);
+    setHtmlStructure(newValue);
   };
 
   return (
     <div className={classes.annotationContainer}>
       <ContentEditable
         onChange={handleChange}
-        html={html}
         style={{ ...convertThemeToCssInJs(theme), height: '100%', padding: 16 }}
       />
     </div>

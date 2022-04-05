@@ -1,56 +1,51 @@
-import React, { CSSProperties, useEffect, useRef, useState } from 'react';
-import { Row, RowSelections } from '@/components/content-editable/types';
-import { onInputLogic } from '@/components/content-editable/logic';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { Row } from './types';
+import { onInputLogic } from './logic/logic';
+import { setNewCaretPosition } from './logic/selection.logic';
+import { getDomRowElementByKey } from './logic/dom.logic';
 
 export interface IContentEditableProps {
-  html: string;
-  onChange: (value: string) => void;
+  onChange: (stringifiedHtmlStructure: string) => void;
   style?: CSSProperties;
 }
 
-const ContentEditable: React.VFC<IContentEditableProps> = ({ html, onChange, style }) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const lastHtml = useRef<string>('');
-
+const ContentEditable: React.VFC<IContentEditableProps> = ({ onChange, style }) => {
   const [contentStructure, setContentStructure] = useState<Row[]>([
     {
       key: 'first',
       text: '',
+      focusColumn: 0,
     },
   ]);
 
-  const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // const curHtml = divRef.current?.innerHTML ?? '';
-    // if (curHtml !== lastHtml.current) {
-    //   onChange(curHtml);
-    // }
-    //
-    // lastHtml.current = html;
+  useEffect(() => {
+    const focusedRow = contentStructure.find((row) => row.focusColumn !== undefined)!;
+    const focusedRowDomElement = getDomRowElementByKey(focusedRow.key)!;
 
-    setContentStructure(onInputLogic(e, contentStructure));
+    setNewCaretPosition(focusedRowDomElement, focusedRow.focusColumn!);
+  }, [contentStructure]);
+
+  const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const newContentStructure = onInputLogic(e, contentStructure);
+
+    setContentStructure(newContentStructure);
+    onChange(JSON.stringify(newContentStructure));
   };
 
-  const handleShortcut = () => {};
-
-  useEffect(() => {
-    // Set html only after first render and if html is not already set
-    if (!divRef.current || divRef.current.innerHTML) return;
-
-    divRef.current.innerHTML = html;
-  }, [html]);
+  const handleShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log(e);
+  };
 
   return (
     <div
-      style={{ ...style, overflowY: 'auto' }}
       contentEditable
       suppressContentEditableWarning
-      ref={divRef}
+      style={{ ...style, overflowY: 'auto' }}
       onKeyDown={handleShortcut}
       onBeforeInput={handleInput}
-      // dangerouslySetInnerHTML={{ __html: html }}
     >
-      {contentStructure.map((row, index) => (
-        <div key={row.key} data-key={row.key} style={{ whiteSpace: 'nowrap' }}>
+      {contentStructure.map((row) => (
+        <div key={row.key} data-key={row.key} style={{ whiteSpace: 'pre-wrap' }}>
           {row.text}
         </div>
       ))}
