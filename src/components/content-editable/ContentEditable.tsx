@@ -5,18 +5,13 @@ import { setNewCaretPosition } from './logic/selection.logic';
 import { getDomRowElementByKey } from './logic/dom.logic';
 
 export interface IContentEditableProps {
-  onChange: (stringifiedHtmlStructure: string) => void;
+  htmlStructure: Row[];
+  onChange: (htmlStructure: Row[]) => void;
   style?: CSSProperties;
 }
 
-const ContentEditable: React.VFC<IContentEditableProps> = ({ onChange, style }) => {
-  const [contentStructure, setContentStructure] = useState<Row[]>([
-    {
-      key: 'first',
-      text: '',
-      focusColumn: 0,
-    },
-  ]);
+const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onChange, style }) => {
+  const [contentStructure, setContentStructure] = useState<Row[]>(htmlStructure);
 
   useEffect(() => {
     const focusedRow = contentStructure.find((row) => row.focusColumn !== undefined)!;
@@ -26,10 +21,19 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ onChange, style }) 
   }, [contentStructure]);
 
   const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log(e);
     const newContentStructure = onInputLogic(e, contentStructure);
 
     setContentStructure(newContentStructure);
-    onChange(JSON.stringify(newContentStructure));
+    onChange(newContentStructure);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    console.log(e);
+    // const newContentStructure = onInputLogic(e, contentStructure);
+    //
+    // setContentStructure(newContentStructure);
+    // onChange(newContentStructure);
   };
 
   const handleShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -43,11 +47,15 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ onChange, style }) 
       style={{ ...style, overflowY: 'auto' }}
       onKeyDown={handleShortcut}
       onBeforeInput={handleInput}
+      onPaste={handlePaste}
     >
       {contentStructure.map((row) => (
-        <div key={row.key} data-key={row.key} style={{ whiteSpace: 'pre-wrap' }}>
-          {row.text}
-        </div>
+        <div
+          key={row.key}
+          data-key={row.key}
+          style={{ whiteSpace: 'pre-wrap' }}
+          dangerouslySetInnerHTML={{ __html: row.text }}
+        />
       ))}
     </div>
   );

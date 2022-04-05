@@ -1,0 +1,1 @@
+export const CHARS_AND_NUMBERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
