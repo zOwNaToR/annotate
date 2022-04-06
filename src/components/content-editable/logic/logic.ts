@@ -17,11 +17,11 @@ export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows
   // @ts-ignore
   const data: string = e.data;
 
-  const rows = unfocusAllRows(currentRows);
+  let rows = unfocusAllRows(currentRows);
   const selection = getSelection(currentRows);
 
   if (shouldDeleteSelection(selection)) {
-    deleteSelection(rows, selection, e.key === 'Delete');
+    rows = deleteSelection(rows, selection, e.key === 'Delete');
   }
 
   if (data === ENTER_INPUT_EVENT_DATA) {
@@ -98,7 +98,9 @@ const removeFullySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {
   return rows.filter((row) => {
     const selectedRow = selectedRows.find((x) => x.key === row.key);
 
-    return selectedRow && !isFullySelectedRow(selectedRow);
+    // Keep unselected rows, first row and rows that are not fully selected
+    const willKeepRow = !selectedRow || selectedRow.isStartingRow || !isFullySelectedRow(selectedRow);
+    return willKeepRow;
   });
 };
 const removeSelectedTextFromPartiallySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {

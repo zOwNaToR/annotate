@@ -29,3 +29,7 @@ export const generateRandomId = (length: number): string => {
     return acc + CHARS_AND_NUMBERS.charAt(Math.floor(Math.random() * charactersLength));
   }, '');
 };
+
+export const removeSpacesFromString = (str: string) => {
+  return str.replace(/\s/g, '');
+};

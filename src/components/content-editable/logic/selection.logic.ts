@@ -1,13 +1,5 @@
-import {
-  PartialSelectedRow,
-  Row,
-  SelectedRow,
-  SelectionType,
-} from '@/components/content-editable/types';
-import {
-  getDomClosestRowElement,
-  getDomRowElementByKey,
-} from '@/components/content-editable/logic/dom.logic';
+import { PartialSelectedRow, Row, SelectedRow, SelectionType } from '@/components/content-editable/types';
+import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 
 const fillPartialRow = (row: PartialSelectedRow, selection: Selection) => {
   if (row.isStartingRow) {
@@ -61,9 +53,9 @@ export const getSelection = (currentRows: Row[]): SelectionType => {
   const selectedRows = currentRows.reduce((acc, curr) => {
     const row = getDomRowElementByKey(curr.key)!;
 
-    if (selection.containsNode(row)) {
-      const isStartingRow = selection.focusNode === row;
-      const isEndingRow = selection.anchorNode === row;
+    if (selection.containsNode(row, true)) {
+      const isStartingRow = row.contains(selection.focusNode);
+      const isEndingRow = row.contains(selection.anchorNode);
 
       const rowInfo: PartialSelectedRow = {
         node: row,

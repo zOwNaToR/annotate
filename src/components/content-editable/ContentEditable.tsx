@@ -14,6 +14,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onCh
   const [contentStructure, setContentStructure] = useState<Row[]>(htmlStructure);
 
   useEffect(() => {
+    // Reset the caret after re-render based on row with focusColumn property
     const focusedRow = contentStructure.find((row) => row.focusColumn !== undefined)!;
     const focusedRowDomElement = getDomRowElementByKey(focusedRow.key)!;
 
