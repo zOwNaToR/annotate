@@ -1,14 +1,13 @@
 import React from 'react';
 import { Row, SelectionType } from '@/components/content-editable/types';
-import { getSelection, shouldDeleteSelection } from '@/components/content-editable/logic/selection.logic';
+import {
+  deleteSelection,
+  getSelection,
+  shouldDeleteSelection,
+} from '@/components/content-editable/logic/selection.logic';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import { generateRandomId, removeCharsFromString } from '@/utils/utils';
-import {
-  addTextToRow,
-  deleteSelection,
-  getRowByKey,
-  shouldPreventDefault,
-} from '@/components/content-editable/logic/utils.logic';
+import { addTextToRow, getRowByKey, shouldPreventDefault } from '@/components/content-editable/logic/utils.logic';
 
 // Entrypoint - Functions for handling events
 export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]) => {

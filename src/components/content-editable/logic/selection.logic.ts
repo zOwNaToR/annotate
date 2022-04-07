@@ -1,5 +1,7 @@
 import { PartialSelectedRow, Row, SelectedRow, SelectionType } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
+import { removeCharsFromString } from '@/utils/utils';
+import { getRowByKey, isFullySelectedRow } from '@/components/content-editable/logic/utils.logic';
 
 const setStartEndColumn = (row: PartialSelectedRow, selection: Selection) => {
   if (row.isStartingRow) {
@@ -96,4 +98,44 @@ export const setNewCaretPosition = (rowToFocus: HTMLElement, column: number) => 
 
   selection.removeAllRanges();
   selection.addRange(range);
+};
+
+export const deleteSelection = (rows: Row[], selection: SelectionType, deleteFromEnd: boolean) => {
+  const { type, selectedRows } = selection;
+
+  if (type === 'Caret') {
+    const selectedRow = selectedRows[0];
+    const row = getRowByKey(rows, selectedRow.key)!;
+
+    if (deleteFromEnd) {
+      row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
+    } else {
+      row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
+    }
+
+    return rows;
+  }
+
+  rows = removeFullySelectedRows(rows, selectedRows);
+  rows = removeSelectedTextFromPartiallySelectedRows(rows, selectedRows);
+
+  return rows;
+};
+export const removeFullySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {
+  return rows.filter((row) => {
+    const selectedRow = selectedRows.find((x) => x.key === row.key);
+
+    // Keep unselected rows, first row and rows that are not fully selected
+    const willKeepRow = !selectedRow || selectedRow.isStartingRow || !isFullySelectedRow(selectedRow);
+    return willKeepRow;
+  });
+};
+export const removeSelectedTextFromPartiallySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {
+  return rows.map((row) => {
+    const selectedRow = selectedRows.find((x) => x.key === row.key);
+    if (!selectedRow) return row;
+
+    row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.endColumn);
+    return row;
+  });
 };
