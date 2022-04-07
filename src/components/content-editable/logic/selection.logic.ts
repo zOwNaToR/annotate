@@ -1,7 +1,6 @@
 import { PartialRowWithSelectedInfo, Row, RowWithSelectedInfo } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 import { removeCharsFromString } from '@/utils/utils';
-import { isFullySelectedRow } from '@/components/content-editable/logic/utils.logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
   const selection = window.getSelection()!;
@@ -106,7 +105,7 @@ export const getFirstSelectedRow = (rows: RowWithSelectedInfo[]) => {
   return rows.find((row) => row.selected && row.isStartingRow);
 };
 
-export const deleteSelectedRows = (rows: RowWithSelectedInfo[], deleteFromEnd: boolean): RowWithSelectedInfo[] => {
+export const deleteSelectedRows = (rows: RowWithSelectedInfo[]): RowWithSelectedInfo[] => {
   // if (type === 'Caret') {
   //   const selectedRow = selectedRows[0];
   //   const row = getRowByKey(rows, selectedRow.key)!;
@@ -120,19 +119,20 @@ export const deleteSelectedRows = (rows: RowWithSelectedInfo[], deleteFromEnd: b
   //   return rows;
   // }
 
-  rows = removeFullySelectedRows(rows);
-  rows = removeSelectedTextFromRows(rows);
+  rows = removeMiddleRows(rows);
 
-  return rows;
+  if (rows.filter((x) => x.selected).length === 1) {
+    return removeSelectedTextFromRows(rows);
+  } else {
+    return [mergeRows(rows[0], rows[1])];
+  }
 };
-export const removeFullySelectedRows = (rows: RowWithSelectedInfo[]) => {
-  return rows.filter((row) => {
-    if (!row.selected) return true;
 
-    // Keep first row and rows that are not fully selected
-    return row.isStartingRow || !isFullySelectedRow(row);
-  });
+export const removeMiddleRows = (rows: RowWithSelectedInfo[]) => {
+  // Keep unselected and starting/ending rows;
+  return rows.filter((row) => !row.selected || !row.isMiddleRow);
 };
+
 export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {
   return rows.map((row) => {
     if (!row.selected) return row;
@@ -140,4 +140,23 @@ export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {
     row.text = removeCharsFromString(row.text, row.startColumn, row.endColumn);
     return row;
   });
+};
+
+export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSelectedInfo): RowWithSelectedInfo => {
+  return {
+    selected: true,
+    key: startingRow.key,
+    text: `${startingRow.text.substring(0, startingRow.startColumn!)}${endingRow.text.substring(
+      endingRow.endColumn!,
+      endingRow.text.length,
+    )}`,
+    isStartingRow: true,
+    isMiddleRow: false,
+    isEndingRow: true,
+    startColumn: startingRow.startColumn!,
+    endColumn: startingRow.startColumn!,
+    node: startingRow.node!,
+    index: startingRow.index,
+    focusColumn: 0,
+  };
 };

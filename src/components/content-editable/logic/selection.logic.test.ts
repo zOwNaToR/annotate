@@ -1,4 +1,4 @@
-import { removeFullySelectedRows } from '@/components/content-editable/logic/selection.logic';
+import { removeMiddleRows } from '@/components/content-editable/logic/selection.logic';
 import { RowWithSelectedInfo } from '@/components/content-editable/types';
 
 describe('removeFullySelectedRows', () => {
@@ -7,6 +7,7 @@ describe('removeFullySelectedRows', () => {
       {
         key: '1',
         text: 'Hi',
+        index: 1,
         selected: true,
         node: {} as unknown as Node,
         isStartingRow: true,
@@ -17,16 +18,17 @@ describe('removeFullySelectedRows', () => {
       },
     ];
 
-    expect(removeFullySelectedRows(rows)).toEqual(rows);
+    expect(removeMiddleRows(rows)).toEqual(rows);
   });
 
   it('Should remove nothing when the second row is not fully selected', () => {
     const rows: RowWithSelectedInfo[] = [
       {
-        selected: true,
-        node: {} as unknown as Node,
         key: '1',
         text: 'Hi',
+        index: 1,
+        selected: true,
+        node: {} as unknown as Node,
         isStartingRow: true,
         isEndingRow: false,
         isMiddleRow: false,
@@ -34,10 +36,11 @@ describe('removeFullySelectedRows', () => {
         endColumn: 2,
       },
       {
-        selected: true,
-        node: {} as unknown as Node,
         key: '2',
         text: 'You',
+        index: 2,
+        selected: true,
+        node: {} as unknown as Node,
         isStartingRow: false,
         isEndingRow: true,
         isMiddleRow: false,
@@ -46,6 +49,6 @@ describe('removeFullySelectedRows', () => {
       },
     ];
 
-    expect(removeFullySelectedRows(rows)).toEqual(rows);
+    expect(removeMiddleRows(rows)).toEqual(rows);
   });
 });
