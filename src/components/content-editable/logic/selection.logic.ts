@@ -1,7 +1,7 @@
 import { PartialSelectedRow, Row, SelectedRow, SelectionType } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 
-const fillPartialRow = (row: PartialSelectedRow, selection: Selection) => {
+const setStartEndColumn = (row: PartialSelectedRow, selection: Selection) => {
   if (row.isStartingRow) {
     return {
       ...row,
@@ -66,7 +66,7 @@ export const getSelection = (currentRows: Row[]): SelectionType => {
         isMiddleRow: !isStartingRow && !isEndingRow,
       };
 
-      return [...acc, { ...fillPartialRow(rowInfo, selection) }];
+      return [...acc, { ...setStartEndColumn(rowInfo, selection) }];
     }
 
     return acc;
