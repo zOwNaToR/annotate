@@ -1,5 +1,7 @@
 import { PartialRowWithSelectedInfo, Row, RowWithSelectedInfo } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
+import { removeCharsFromString } from '@/utils/utils';
+import { isFullySelectedRow } from '@/components/content-editable/logic/utils.logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
   const selection = window.getSelection()!;
@@ -102,4 +104,40 @@ export const setNewCaretPosition = (rowToFocus: HTMLElement, column: number) => 
 
 export const getFirstSelectedRow = (rows: RowWithSelectedInfo[]) => {
   return rows.find((row) => row.selected && row.isStartingRow);
+};
+
+export const deleteSelectedRows = (rows: RowWithSelectedInfo[], deleteFromEnd: boolean): RowWithSelectedInfo[] => {
+  // if (type === 'Caret') {
+  //   const selectedRow = selectedRows[0];
+  //   const row = getRowByKey(rows, selectedRow.key)!;
+  //
+  //   if (deleteFromEnd) {
+  //     row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
+  //   } else {
+  //     row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
+  //   }
+  //
+  //   return rows;
+  // }
+
+  rows = removeFullySelectedRows(rows);
+  rows = removeSelectedTextFromRows(rows);
+
+  return rows;
+};
+export const removeFullySelectedRows = (rows: RowWithSelectedInfo[]) => {
+  return rows.filter((row) => {
+    if (!row.selected) return true;
+
+    // Keep first row and rows that are not fully selected
+    return row.isStartingRow || !isFullySelectedRow(row);
+  });
+};
+export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {
+  return rows.map((row) => {
+    if (!row.selected) return row;
+
+    row.text = removeCharsFromString(row.text, row.startColumn, row.endColumn);
+    return row;
+  });
 };
