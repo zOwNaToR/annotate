@@ -17,6 +17,28 @@ export type Row = {
   focusColumn?: number;
 };
 
+type RowSelectedInfo =
+  | {
+      selected: false;
+      node?: never;
+      isStartingRow?: never;
+      isMiddleRow?: never;
+      isEndingRow?: never;
+      startColumn?: never;
+      endColumn?: never;
+    }
+  | {
+      selected: true;
+      node: Node;
+      isStartingRow: boolean;
+      isMiddleRow: boolean;
+      isEndingRow: boolean;
+      startColumn: number;
+      endColumn: number;
+    };
+
+export type RowWithSelectedInfo = Row & RowSelectedInfo;
+
 export type SelectedRow = Row & {
   node: Node;
   isStartingRow: boolean;
@@ -25,7 +47,7 @@ export type SelectedRow = Row & {
   startColumn: number;
   endColumn: number;
 };
-export type PartialSelectedRow = PartialBy<SelectedRow, 'startColumn' | 'endColumn'>;
+export type PartialRowWithSelectedInfo = PartialBy<RowWithSelectedInfo, 'startColumn' | 'endColumn'>;
 
 export type SelectionType = {
   type: string;

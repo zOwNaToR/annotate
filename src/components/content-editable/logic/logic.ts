@@ -1,6 +1,11 @@
 import React from 'react';
 import { Row, SelectionType } from '@/components/content-editable/types';
-import { getSelection, shouldDeleteSelection } from '@/components/content-editable/logic/selection.logic';
+import {
+  getSelection,
+  markSelectedRows,
+  shouldDeleteSelection,
+  shouldDeleteSelectionNew,
+} from '@/components/content-editable/logic/selection.logic';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import { generateRandomId, removeCharsFromString } from '@/utils/utils';
 import {
@@ -18,9 +23,10 @@ export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows
   const data: string = e.data;
 
   let rows = unfocusAllRows(currentRows);
-  const selection = getSelection(currentRows);
+  // const selection = getSelection(currentRows);
+  const selection = markSelectedRows(currentRows);
 
-  if (shouldDeleteSelection(selection)) {
+  if (shouldDeleteSelectionNew(selection)) {
     rows = deleteSelection(rows, selection, e.key === 'Delete');
   }
 

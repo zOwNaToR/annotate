@@ -1,5 +1,54 @@
-import { KeyMap, Row, SelectedRow, SelectionType } from '@/components/content-editable/types';
+import { KeyMap, Row, RowWithSelectedInfo, SelectedRow, SelectionType } from '@/components/content-editable/types';
 import { removeCharsFromString, removeSpacesFromString } from '@/utils/utils';
+
+export const deleteSelectionNew = (rows: RowWithSelectedInfo[], deleteFromEnd: boolean) => {
+  const selectedRows = rows.filter((x) => x.selected);
+
+  if (type === 'Caret') {
+    const selectedRow = selectedRows[0];
+    const row = getRowByKey(rows, selectedRow.key)!;
+
+    if (deleteFromEnd) {
+      row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
+    } else {
+      row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
+    }
+
+    return rows;
+  }
+
+  rows = removeFullySelectedRowsNew(rows, selectedRows);
+  rows = removeSelectedTextFromPartiallySelectedRowsNew(rows, selectedRows);
+
+  return rows;
+};
+export const removeFullySelectedRowsNew = (rows: Row[], selectedRows: SelectedRow[]) => {
+  return rows.filter((row) => {
+    const selectedRow = selectedRows.find((x) => x.key === row.key);
+
+    // Keep unselected rows, first row and rows that are not fully selected
+    const willKeepRow = !selectedRow || selectedRow.isStartingRow || !isFullySelectedRow(selectedRow);
+    return willKeepRow;
+  });
+};
+export const removeSelectedTextFromPartiallySelectedRowsNew = (rows: Row[], selectedRows: SelectedRow[]) => {
+  return rows.map((row) => {
+    const selectedRow = selectedRows.find((x) => x.key === row.key);
+    if (!selectedRow) return row;
+
+    row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.endColumn);
+    return row;
+  });
+};
+
+/*
+
+
+
+
+
+
+ */
 
 export const shouldPreventDefault = ({ preventDefault }: KeyMap, ctrlKey: boolean, shiftKey: boolean) => {
   return typeof preventDefault === 'boolean' ? preventDefault : preventDefault(ctrlKey, shiftKey);

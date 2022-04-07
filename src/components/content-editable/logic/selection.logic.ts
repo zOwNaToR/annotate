@@ -1,29 +1,103 @@
-import { PartialSelectedRow, Row, SelectedRow, SelectionType } from '@/components/content-editable/types';
+import {
+  PartialRowWithSelectedInfo,
+  Row,
+  RowWithSelectedInfo,
+  SelectedRow,
+  SelectionType,
+} from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 
-const fillPartialRow = (row: PartialSelectedRow, selection: Selection) => {
+export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
+  const selection = window.getSelection()!;
+
+  const onlyOneRowSelected = selection.focusNode === selection.anchorNode;
+
+  if (selection.type === 'Caret' || onlyOneRowSelected) {
+    const selectedElement = getDomClosestRowElement(selection.focusNode!);
+    const selectedElementKey = selectedElement.getAttribute('data-key')!;
+
+    return rows.map((row) => {
+      if (row.key !== selectedElementKey) return { ...row, selected: false };
+
+      return {
+        ...row,
+        selected: true,
+        node: selectedElement,
+        isStartingRow: true,
+        isMiddleRow: false,
+        isEndingRow: true,
+        startColumn: selection.focusOffset,
+        endColumn: selection.anchorOffset,
+      };
+    });
+  }
+
+  return rows.map((row) => {
+    const domRow = getDomRowElementByKey(row.key)!;
+
+    if (!selection.containsNode(domRow, true)) {
+      const a: RowWithSelectedInfo = { ...row, selected: false };
+      return a;
+    }
+
+    const isStartingRow = domRow.contains(selection.focusNode);
+    const isEndingRow = domRow.contains(selection.anchorNode);
+
+    const rowInfo: PartialRowWithSelectedInfo = {
+      ...row,
+      selected: true,
+      node: domRow,
+      isStartingRow,
+      isEndingRow,
+      isMiddleRow: !isStartingRow && !isEndingRow,
+    };
+
+    return { ...rowInfo, ...getRowStartEndColumns(rowInfo, selection) } as RowWithSelectedInfo;
+  });
+};
+
+export const shouldDeleteSelectionNew = (rows: RowWithSelectedInfo[]) => {
+  const startingRow = rows.find((x) => x.selected && x.isStartingRow)!;
+
+  return getSelectionNew().type === 'Range' || startingRow.startColumn! < startingRow.endColumn!;
+};
+
+export const getSelectionNew = (): Selection => {
+  return window.getSelection()!;
+};
+
+const getRowStartEndColumns = (
+  row: PartialRowWithSelectedInfo,
+  selection: Selection,
+): { startColumn: number; endColumn: number } => {
   if (row.isStartingRow) {
     return {
-      ...row,
       startColumn: selection.focusOffset,
-      endColumn: row.node.textContent?.length ?? 0,
+      endColumn: row.node!.textContent?.length ?? 0,
     };
   }
 
   if (row.isEndingRow) {
     return {
-      ...row,
       startColumn: 0,
       endColumn: selection.anchorOffset,
     };
   }
 
   return {
-    ...row,
     startColumn: 0,
-    endColumn: row.node.textContent?.length ?? 0,
+    endColumn: row.node!.textContent?.length ?? 0,
   };
 };
+
+/*
+
+
+
+
+
+
+ */
 
 export const getSelection = (currentRows: Row[]): SelectionType => {
   const selection = window.getSelection()!;
@@ -57,7 +131,7 @@ export const getSelection = (currentRows: Row[]): SelectionType => {
       const isStartingRow = row.contains(selection.focusNode);
       const isEndingRow = row.contains(selection.anchorNode);
 
-      const rowInfo: PartialSelectedRow = {
+      const rowInfo: PartialRowWithSelectedInfo = {
         node: row,
         key: row.getAttribute('data-key')!,
         text: row.innerText,
@@ -66,7 +140,7 @@ export const getSelection = (currentRows: Row[]): SelectionType => {
         isMiddleRow: !isStartingRow && !isEndingRow,
       };
 
-      return [...acc, { ...fillPartialRow(rowInfo, selection) }];
+      return [...acc, { ...setRowStartEndColumns(rowInfo, selection) }];
     }
 
     return acc;
