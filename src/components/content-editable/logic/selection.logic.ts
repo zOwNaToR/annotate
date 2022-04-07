@@ -81,7 +81,7 @@ export const getSelection = (currentRows: Row[]): SelectionType => {
 };
 
 export const shouldDeleteSelection = ({ type, selectedRows }: SelectionType) => {
-  return type === 'Range' || selectedRows[0].startColumn < selectedRows[0].endColumn;
+  return type === 'Range';
 };
 
 export const setNewCaretPosition = (rowToFocus: HTMLElement, column: number) => {
@@ -103,21 +103,22 @@ export const setNewCaretPosition = (rowToFocus: HTMLElement, column: number) => 
 export const deleteSelection = (rows: Row[], selection: SelectionType, deleteFromEnd: boolean) => {
   const { type, selectedRows } = selection;
 
-  if (type === 'Caret') {
-    const selectedRow = selectedRows[0];
-    const row = getRowByKey(rows, selectedRow.key)!;
-
-    if (deleteFromEnd) {
-      row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
-    } else {
-      row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
-    }
-
-    return rows;
-  }
+  // if (type === 'Caret') {
+  //   const selectedRow = selectedRows[0];
+  //   const row = getRowByKey(rows, selectedRow.key)!;
+  //
+  //   if (deleteFromEnd) {
+  //     row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
+  //   } else {
+  //     row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
+  //   }
+  //
+  //   return rows;
+  // }
 
   rows = removeFullySelectedRows(rows, selectedRows);
-  rows = removeSelectedTextFromPartiallySelectedRows(rows, selectedRows);
+  // Remove text from partially selected rows
+  rows = removeSelectedTextFromRows(rows, selectedRows);
 
   return rows;
 };
@@ -126,11 +127,11 @@ export const removeFullySelectedRows = (rows: Row[], selectedRows: SelectedRow[]
     const selectedRow = selectedRows.find((x) => x.key === row.key);
 
     // Keep unselected rows, first row and rows that are not fully selected
-    const willKeepRow = !selectedRow || selectedRow.isStartingRow || !isFullySelectedRow(selectedRow);
-    return willKeepRow;
+    const keepRow = !selectedRow || selectedRow.isStartingRow || !isFullySelectedRow(selectedRow);
+    return keepRow;
   });
 };
-export const removeSelectedTextFromPartiallySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {
+export const removeSelectedTextFromRows = (rows: Row[], selectedRows: SelectedRow[]) => {
   return rows.map((row) => {
     const selectedRow = selectedRows.find((x) => x.key === row.key);
     if (!selectedRow) return row;
