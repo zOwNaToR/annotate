@@ -1,12 +1,12 @@
 import React from 'react';
-import { Row, SelectedRow, SelectionType } from '@/components/content-editable/types';
+import { Row, SelectionType } from '@/components/content-editable/types';
 import { getSelection, shouldDeleteSelection } from '@/components/content-editable/logic/selection.logic';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import { generateRandomId, removeCharsFromString } from '@/utils/utils';
 import {
   addTextToRow,
+  deleteSelection,
   getRowByKey,
-  isFullySelectedRow,
   shouldPreventDefault,
 } from '@/components/content-editable/logic/utils.logic';
 
@@ -71,44 +71,4 @@ const setFocusAndTextToSelectedColumn = (rows: Row[], selection: SelectionType, 
 
 const unfocusAllRows = (rows: Row[]): Row[] => {
   return rows.map((row) => ({ ...row, focusColumn: undefined }));
-};
-
-const deleteSelection = (rows: Row[], selection: SelectionType, deleteFromEnd: boolean) => {
-  const { type, selectedRows } = selection;
-
-  if (type === 'Caret') {
-    const selectedRow = selectedRows[0];
-    const row = getRowByKey(rows, selectedRow.key)!;
-
-    if (deleteFromEnd) {
-      row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
-    } else {
-      row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
-    }
-
-    return rows;
-  }
-
-  rows = removeFullySelectedRows(rows, selectedRows);
-  rows = removeSelectedTextFromPartiallySelectedRows(rows, selectedRows);
-
-  return rows;
-};
-const removeFullySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {
-  return rows.filter((row) => {
-    const selectedRow = selectedRows.find((x) => x.key === row.key);
-
-    // Keep unselected rows, first row and rows that are not fully selected
-    const willKeepRow = !selectedRow || selectedRow.isStartingRow || !isFullySelectedRow(selectedRow);
-    return willKeepRow;
-  });
-};
-const removeSelectedTextFromPartiallySelectedRows = (rows: Row[], selectedRows: SelectedRow[]) => {
-  return rows.map((row) => {
-    const selectedRow = selectedRows.find((x) => x.key === row.key);
-    if (!selectedRow) return row;
-
-    row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.endColumn);
-    return row;
-  });
 };
