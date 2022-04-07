@@ -1,10 +1,4 @@
-import {
-  PartialRowWithSelectedInfo,
-  Row,
-  RowWithSelectedInfo,
-  SelectedRow,
-  SelectionType,
-} from '@/components/content-editable/types';
+import { PartialRowWithSelectedInfo, Row, RowWithSelectedInfo } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
@@ -57,9 +51,9 @@ export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
 };
 
 export const shouldDeleteSelectedRows = (rows: RowWithSelectedInfo[]) => {
-  const startingRow = rows.find((x) => x.selected && x.isStartingRow)!;
+  const firstSelectedRow = getFirstSelectedRow(rows)!;
 
-  return getSelection().type === 'Range' || startingRow.startColumn! < startingRow.endColumn!;
+  return getSelection().type === 'Range' || firstSelectedRow.startColumn! < firstSelectedRow.endColumn!;
 };
 
 export const getSelection = (): Selection => {
