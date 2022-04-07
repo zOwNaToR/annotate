@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row } from '@/components/content-editable/types';
+import { Row, RowWithSelectedInfo } from '@/components/content-editable/types';
 import {
   deleteSelectedRows,
   getFirstSelectedRow,
@@ -11,37 +11,31 @@ import { generateRandomId, removeCharsFromString } from '@/utils/utils';
 import { addTextToRow, getRowByKey, shouldPreventDefault } from '@/components/content-editable/logic/utils.logic';
 
 // Entrypoint - Functions for handling events
-export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]) => {
+export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]): Row[] => {
   e.preventDefault();
 
   // @ts-ignore
   const data: string = e.data;
 
-  let rows = unfocusAllRows(currentRows);
+  const rows = unfocusAllRows(currentRows);
   // const selection = getSelection(currentRows);
-  const rowsWithSelection = markSelectedRows(rows);
+  let rowsWithSelection = markSelectedRows(rows);
 
   if (shouldDeleteSelectedRows(rowsWithSelection)) {
-    rows = deleteSelectedRows(rowsWithSelection);
+    rowsWithSelection = deleteSelectedRows(rowsWithSelection);
   }
 
   // After deleting selected rows, we need to get the first selected row because now it's the focused row
   const firstSelectedRow = getFirstSelectedRow(rowsWithSelection)!;
 
   if (data === ENTER_INPUT_EVENT_DATA) {
-    rows = addNewRow(
-      rows,
-      rows.findIndex((x) => x.key === firstSelectedRow.key),
-      firstSelectedRow.endColumn!,
-    );
+    rowsWithSelection = addNewRow(rowsWithSelection, firstSelectedRow.index, firstSelectedRow.endColumn!);
   } else {
-    const editingRow: Row = getRowByKey(rows, firstSelectedRow.key)!;
-
-    editingRow.text = addTextToRow(editingRow, data, firstSelectedRow.startColumn!);
-    editingRow.focusColumn = firstSelectedRow.startColumn! + data.length;
+    firstSelectedRow.text = addTextToRow(firstSelectedRow, data, firstSelectedRow.startColumn!);
+    firstSelectedRow.focusColumn = firstSelectedRow.startColumn! + data.length;
   }
 
-  return rows;
+  return rowsWithSelection.map((x) => ({ key: x.key, index: x.index, text: x.text, focusColumn: x.focusColumn }));
 };
 
 export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]) => {
@@ -56,20 +50,38 @@ export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentR
 };
 
 // Helper functions
-const addNewRow = (rows: Row[], insertAtRow: number, insertAtColumn: number) => {
+const addNewRow = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtColumn: number) => {
   const sourceRow = rows[insertAtRow];
 
   // Create new row with text copied from sourceRow, from insertAtColumn to the end of the row.
   // At index sourceRow + 1
-  const newRow: Row = {
+  const newRow: RowWithSelectedInfo = {
+    ...sourceRow,
     key: generateRandomId(5),
     text: sourceRow.text.slice(insertAtColumn, sourceRow.text.length) || '\n',
     focusColumn: 0,
-    index: insertAtRow + 1,
+    index: sourceRow.index + 1,
   };
 
   // Remove text after insertAtColumn
   sourceRow.text = removeCharsFromString(sourceRow.text, insertAtColumn, sourceRow.text.length);
+
+  rows.splice(newRow.index, 0, newRow);
+  return rows;
+};
+
+const splitRow = (sourceRow: RowWithSelectedInfo, splitFromColumn: number) => {
+  // Create new row with text copied from sourceRow, from "splitFromColumn" to the end of the row.
+  const newRow: RowWithSelectedInfo = {
+    ...sourceRow,
+    key: generateRandomId(5),
+    text: sourceRow.text.slice(splitFromColumn, sourceRow.text.length) || '\n',
+    focusColumn: 0,
+    index: sourceRow.index + 1,
+  };
+
+  // Remove text after insertAtColumn
+  sourceRow.text = removeCharsFromString(sourceRow.text, splitFromColumn, sourceRow.text.length);
 
   rows.splice(newRow.index, 0, newRow);
   return rows;

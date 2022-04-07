@@ -1,6 +1,7 @@
 import { PartialRowWithSelectedInfo, Row, RowWithSelectedInfo } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 import { removeCharsFromString } from '@/utils/utils';
+import { orderRows } from '@/components/content-editable/logic/utils.logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
   const selection = window.getSelection()!;
@@ -31,8 +32,7 @@ export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
     const domRow = getDomRowElementByKey(row.key)!;
 
     if (!selection.containsNode(domRow, true)) {
-      const a: RowWithSelectedInfo = { ...row, selected: false };
-      return a;
+      return { ...row, selected: false };
     }
 
     const isStartingRow = domRow.contains(selection.focusNode);
@@ -121,16 +121,18 @@ export const deleteSelectedRows = (rows: RowWithSelectedInfo[]): RowWithSelected
 
   rows = removeMiddleRows(rows);
 
-  if (rows.filter((x) => x.selected).length === 1) {
-    return removeSelectedTextFromRows(rows);
+  const selectedRows = rows.filter((x) => x.selected);
+  const unSelectedRows = rows.filter((x) => !x.selected);
+
+  if (selectedRows.length === 1) {
+    return orderRows([...unSelectedRows, ...removeSelectedTextFromRows(rows)]);
   } else {
-    return [mergeRows(rows[0], rows[1])];
+    return orderRows([...unSelectedRows, mergeRows(selectedRows[0], selectedRows[1])]);
   }
 };
 
 export const removeMiddleRows = (rows: RowWithSelectedInfo[]) => {
-  // Keep unselected and starting/ending rows;
-  return rows.filter((row) => !row.selected || !row.isMiddleRow);
+  return rows.removeItems((row) => row.selected && row.isMiddleRow);
 };
 
 export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {

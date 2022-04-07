@@ -4,6 +4,7 @@ import { ITheme, LIGHT_THEME, ThemeContext } from '@/context/theme';
 import FloatingContainer from '@/components/floating-container/FloatingContainer';
 import GridSelector from '@/components/grid-selector/GridSelector';
 import ThemeToggle from '@/components/theme-toggler/ThemeToggle';
+import '@/utils/prototype-extensions/array/implementation';
 
 const columnOptionsArray = [1, 2];
 
