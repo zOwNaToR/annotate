@@ -1,17 +1,15 @@
 import React from 'react';
-import { Row, SelectionType } from '@/components/content-editable/types';
+import { Row } from '@/components/content-editable/types';
 import {
-  getSelection,
+  getFirstSelectedRow,
   markSelectedRows,
-  shouldDeleteSelection,
-  shouldDeleteSelectionNew,
+  shouldDeleteSelectedRows,
 } from '@/components/content-editable/logic/selection.logic';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import { generateRandomId, removeCharsFromString } from '@/utils/utils';
 import {
   addTextToRow,
-  deleteSelection,
-  getRowByKey,
+  deleteSelectedRows,
   shouldPreventDefault,
 } from '@/components/content-editable/logic/utils.logic';
 
@@ -24,16 +22,20 @@ export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows
 
   let rows = unfocusAllRows(currentRows);
   // const selection = getSelection(currentRows);
-  const selection = markSelectedRows(currentRows);
+  const rowsWithSelection = markSelectedRows(currentRows);
 
-  if (shouldDeleteSelectionNew(selection)) {
-    rows = deleteSelection(rows, selection, e.key === 'Delete');
+  if (shouldDeleteSelectedRows(rowsWithSelection)) {
+    rows = deleteSelectedRows(rowsWithSelection, e.key === 'Delete');
   }
 
+  // After deleting selected rows, we need to get the first selected row because now it's the focused row
+  const firstSelectedRow = getFirstSelectedRow(rowsWithSelection)!;
+
   if (data === ENTER_INPUT_EVENT_DATA) {
-    addNewRowWithFocus(rows, selection);
+    rows = addNewRow(rows, rows.indexOf(firstSelectedRow), firstSelectedRow.endColumn!);
   } else {
-    setFocusAndTextToSelectedColumn(rows, selection, data);
+    firstSelectedRow.text = addTextToRow(firstSelectedRow, data, firstSelectedRow.startColumn!);
+    firstSelectedRow.focusColumn = firstSelectedRow.startColumn! + data.length;
   }
 
   return rows;
@@ -51,28 +53,22 @@ export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentR
 };
 
 // Helper functions
-const addNewRowWithFocus = (rows: Row[], selection: SelectionType) => {
-  const selectedRow = selection.selectedRows[0];
-  const focusedRow = getRowByKey(rows, selectedRow.key)!;
-  const focusedRowIndex = rows.indexOf(focusedRow);
+const addNewRow = (rows: Row[], insertAtRow: number, insertAtColumn: number) => {
+  const sourceRow = rows[insertAtRow];
 
+  // Create new row with text copied from sourceRow. From insertAtColumn to the end of the row
   const newRow = {
     key: generateRandomId(5),
-    text: focusedRow.text.slice(selectedRow.startColumn, focusedRow.text.length) || '\n',
+    text: sourceRow.text.slice(insertAtColumn, sourceRow.text.length) || '\n',
     focusColumn: 0,
   };
 
-  focusedRow.text = removeCharsFromString(focusedRow.text, selectedRow.startColumn, focusedRow.text.length);
+  // Remove text after insertAtColumn
+  sourceRow.text = removeCharsFromString(sourceRow.text, insertAtColumn, sourceRow.text.length);
 
-  rows.splice(focusedRowIndex + 1, 0, newRow);
-};
-
-const setFocusAndTextToSelectedColumn = (rows: Row[], selection: SelectionType, text: string) => {
-  const selectedRow = selection.selectedRows[0];
-  const focusedRow = getRowByKey(rows, selectedRow.key)!;
-
-  focusedRow.text = addTextToRow(focusedRow, text, selectedRow.startColumn);
-  focusedRow.focusColumn = selectedRow.startColumn + text.length;
+  // Insert new row at startingRowIndex + 1
+  rows.splice(insertAtRow + 1, 0, newRow);
+  return rows;
 };
 
 const unfocusAllRows = (rows: Row[]): Row[] => {

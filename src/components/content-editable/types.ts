@@ -39,17 +39,4 @@ type RowSelectedInfo =
 
 export type RowWithSelectedInfo = Row & RowSelectedInfo;
 
-export type SelectedRow = Row & {
-  node: Node;
-  isStartingRow: boolean;
-  isMiddleRow: boolean;
-  isEndingRow: boolean;
-  startColumn: number;
-  endColumn: number;
-};
 export type PartialRowWithSelectedInfo = PartialBy<RowWithSelectedInfo, 'startColumn' | 'endColumn'>;
-
-export type SelectionType = {
-  type: string;
-  selectedRows: SelectedRow[];
-};

@@ -56,13 +56,13 @@ export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
   });
 };
 
-export const shouldDeleteSelectionNew = (rows: RowWithSelectedInfo[]) => {
+export const shouldDeleteSelectedRows = (rows: RowWithSelectedInfo[]) => {
   const startingRow = rows.find((x) => x.selected && x.isStartingRow)!;
 
-  return getSelectionNew().type === 'Range' || startingRow.startColumn! < startingRow.endColumn!;
+  return getSelection().type === 'Range' || startingRow.startColumn! < startingRow.endColumn!;
 };
 
-export const getSelectionNew = (): Selection => {
+export const getSelection = (): Selection => {
   return window.getSelection()!;
 };
 
@@ -90,72 +90,6 @@ const getRowStartEndColumns = (
   };
 };
 
-/*
-
-
-
-
-
-
- */
-
-export const getSelection = (currentRows: Row[]): SelectionType => {
-  const selection = window.getSelection()!;
-
-  const onlyOneRowSelected = selection.focusNode === selection.anchorNode;
-
-  if (selection.type === 'Caret' || onlyOneRowSelected) {
-    const rowElement = getDomClosestRowElement(selection.focusNode!);
-
-    return {
-      type: selection.type,
-      selectedRows: [
-        {
-          key: rowElement.getAttribute('data-key')!,
-          node: rowElement,
-          text: rowElement.innerText,
-          isStartingRow: true,
-          isMiddleRow: false,
-          isEndingRow: true,
-          startColumn: selection.focusOffset,
-          endColumn: selection.anchorOffset,
-        },
-      ],
-    };
-  }
-
-  const selectedRows = currentRows.reduce((acc, curr) => {
-    const row = getDomRowElementByKey(curr.key)!;
-
-    if (selection.containsNode(row, true)) {
-      const isStartingRow = row.contains(selection.focusNode);
-      const isEndingRow = row.contains(selection.anchorNode);
-
-      const rowInfo: PartialRowWithSelectedInfo = {
-        node: row,
-        key: row.getAttribute('data-key')!,
-        text: row.innerText,
-        isStartingRow,
-        isEndingRow,
-        isMiddleRow: !isStartingRow && !isEndingRow,
-      };
-
-      return [...acc, { ...setRowStartEndColumns(rowInfo, selection) }];
-    }
-
-    return acc;
-  }, [] as SelectedRow[]);
-
-  return {
-    type: selection.type,
-    selectedRows,
-  };
-};
-
-export const shouldDeleteSelection = ({ type, selectedRows }: SelectionType) => {
-  return type === 'Range' || selectedRows[0].startColumn < selectedRows[0].endColumn;
-};
-
 export const setNewCaretPosition = (rowToFocus: HTMLElement, column: number) => {
   const range = document.createRange();
   const selection = window.getSelection()!;
@@ -170,4 +104,8 @@ export const setNewCaretPosition = (rowToFocus: HTMLElement, column: number) => 
 
   selection.removeAllRanges();
   selection.addRange(range);
+};
+
+export const getFirstSelectedRow = (rows: RowWithSelectedInfo[]) => {
+  return rows.find((row) => row.selected && row.isStartingRow);
 };
