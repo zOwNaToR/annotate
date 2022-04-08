@@ -2,7 +2,7 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { Row } from './types';
 import { onInputLogic } from './logic/logic';
 import { setNewCaretPosition } from './logic/selection.logic';
-import { getDomRowElementByKey } from './logic/dom.logic';
+import { getDomRowElementByKey, renderRowTextToHtml } from './logic/dom.logic';
 
 export interface IContentEditableProps {
   htmlStructure: Row[];
@@ -55,7 +55,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onCh
           key={row.key}
           data-key={row.key}
           style={{ whiteSpace: 'pre-wrap', minHeight: '24px' }}
-          dangerouslySetInnerHTML={{ __html: row.text || '<br>' }}
+          dangerouslySetInnerHTML={{ __html: renderRowTextToHtml(row) }}
         />
       ))}
     </div>

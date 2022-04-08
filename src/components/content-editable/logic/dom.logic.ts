@@ -1,8 +1,9 @@
+import { Row } from '@/components/content-editable/types';
+
 export const getDomRowElementByKey = (key: string): HTMLElement | null => {
   return document.querySelector(`div[data-key='${key}']`);
 };
 
-// TODO Check if it is possible to replace this logic with with closest() function
 export const getDomClosestRowElement = (htmlNode: Node): HTMLElement => {
   if ((htmlNode as HTMLElement).hasAttribute('data-key')) {
     return htmlNode as HTMLElement;
@@ -17,4 +18,10 @@ export const getDomClosestRowElement = (htmlNode: Node): HTMLElement => {
   }
 
   return getDomClosestRowElement(htmlNode.parentElement);
+};
+
+export const renderRowTextToHtml = (row: Row): string => {
+  if (!row.text) return '<br>';
+
+  return row.text;
 };
