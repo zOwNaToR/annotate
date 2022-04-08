@@ -5,6 +5,7 @@ import FloatingContainer from '@/components/floating-container/FloatingContainer
 import GridSelector from '@/components/grid-selector/GridSelector';
 import ThemeToggle from '@/components/theme-toggler/ThemeToggle';
 import '@/utils/prototype-extensions/array/implementation';
+import '@/utils/prototype-extensions/string/implementation';
 
 const columnOptionsArray = [1, 2];
 

@@ -7,7 +7,7 @@ import {
   shouldDeleteSelectedRows,
 } from '@/components/content-editable/logic/selection.logic';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
-import { generateRandomId, removeCharsFromString } from '@/utils/utils';
+import { generateRandomId } from '@/utils/utils';
 import { addTextToRow, getRowByKey, shouldPreventDefault } from '@/components/content-editable/logic/utils.logic';
 
 // Entrypoint - Functions for handling events
@@ -64,7 +64,7 @@ const addNewRow = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtCol
   };
 
   // Remove text after insertAtColumn
-  sourceRow.text = removeCharsFromString(sourceRow.text, insertAtColumn, sourceRow.text.length);
+  sourceRow.text = sourceRow.text.removeChars(insertAtColumn, sourceRow.text.length);
 
   rows.splice(newRow.index, 0, newRow);
   return rows;
@@ -81,10 +81,9 @@ const splitRow = (sourceRow: RowWithSelectedInfo, splitFromColumn: number) => {
   };
 
   // Remove text after insertAtColumn
-  sourceRow.text = removeCharsFromString(sourceRow.text, splitFromColumn, sourceRow.text.length);
+  sourceRow.text = sourceRow.text.removeChars(splitFromColumn, sourceRow.text.length);
 
-  rows.splice(newRow.index, 0, newRow);
-  return rows;
+  return [sourceRow, newRow];
 };
 
 const unfocusAllRows = (rows: Row[]): Row[] => {

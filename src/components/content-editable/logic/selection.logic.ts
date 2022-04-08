@@ -1,6 +1,5 @@
 import { PartialRowWithSelectedInfo, Row, RowWithSelectedInfo } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
-import { removeCharsFromString } from '@/utils/utils';
 import { orderRows } from '@/components/content-editable/logic/utils.logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
@@ -139,7 +138,7 @@ export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {
   return rows.map((row) => {
     if (!row.selected) return row;
 
-    row.text = removeCharsFromString(row.text, row.startColumn, row.endColumn);
+    row.text = row.text.removeChars(row.startColumn, row.endColumn);
     return row;
   });
 };
