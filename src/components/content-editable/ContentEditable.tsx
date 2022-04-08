@@ -55,7 +55,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onCh
           key={row.key}
           data-key={row.key}
           style={{ whiteSpace: 'pre-wrap', minHeight: '24px' }}
-          dangerouslySetInnerHTML={{ __html: row.text }}
+          dangerouslySetInnerHTML={{ __html: row.text || '<br>' }}
         />
       ))}
     </div>

@@ -4,6 +4,10 @@ export const getDomRowElementByKey = (key: string): HTMLElement | null => {
 
 // TODO Check if it is possible to replace this logic with with closest() function
 export const getDomClosestRowElement = (htmlNode: Node): HTMLElement => {
+  if ((htmlNode as HTMLElement).hasAttribute('data-key')) {
+    return htmlNode as HTMLElement;
+  }
+
   if (!htmlNode.parentElement) {
     return document.querySelector('div[data-key]')!;
   }
