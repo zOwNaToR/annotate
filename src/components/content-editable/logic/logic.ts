@@ -53,18 +53,7 @@ export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentR
 const addNewRow = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtColumn: number) => {
   const sourceRow = rows[insertAtRow];
 
-  // Create new row with text copied from sourceRow, from insertAtColumn to the end of the row.
-  // At index sourceRow + 1
-  const newRow: RowWithSelectedInfo = {
-    ...sourceRow,
-    key: generateRandomId(5),
-    text: sourceRow.text.slice(insertAtColumn, sourceRow.text.length) || '\n',
-    focusColumn: 0,
-    index: sourceRow.index + 1,
-  };
-
-  // Remove text after insertAtColumn
-  sourceRow.text = sourceRow.text.removeChars(insertAtColumn, sourceRow.text.length);
+  const [, newRow] = splitRow(sourceRow, insertAtColumn);
 
   rows.splice(newRow.index, 0, newRow);
   return rows;
@@ -75,7 +64,7 @@ const splitRow = (sourceRow: RowWithSelectedInfo, splitFromColumn: number) => {
   const newRow: RowWithSelectedInfo = {
     ...sourceRow,
     key: generateRandomId(5),
-    text: sourceRow.text.slice(splitFromColumn, sourceRow.text.length) || '\n',
+    text: sourceRow.text.slice(splitFromColumn, sourceRow.text.length),
     focusColumn: 0,
     index: sourceRow.index + 1,
   };
