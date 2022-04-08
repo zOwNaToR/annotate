@@ -5,7 +5,8 @@ export const getDomRowElementByKey = (key: string): HTMLElement | null => {
 };
 
 export const getDomClosestRowElement = (htmlNode: Node): HTMLElement => {
-  if ((htmlNode as HTMLElement).hasAttribute('data-key')) {
+  // NodeType 3 is for text nodes (that have no attributes)
+  if (htmlNode.nodeType !== 3 && (htmlNode as HTMLElement).hasAttribute('data-key')) {
     return htmlNode as HTMLElement;
   }
 
