@@ -12,7 +12,7 @@ export const isFullySelectedRow = (row: RowWithSelectedInfo) => {
   return row.selected && (row.isMiddleRow || row.text.removeSpaces().length === row.startColumn + row.endColumn);
 };
 
-export const addTextToRow = (focusedRow: Row, text: string, position: number) => {
+export const addTextToRow = (focusedRow: RowWithSelectedInfo, text: string, position: number) => {
   return focusedRow.text.slice(0, position) + text + focusedRow.text.slice(position);
 };
 

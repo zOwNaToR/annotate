@@ -10,7 +10,6 @@ import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-edi
 import { generateRandomId } from '@/utils/utils';
 import {
   addTextToRow,
-  getRowByKey,
   mapRowsWithSelectionToRow,
   shouldPreventDefault,
 } from '@/components/content-editable/logic/utils.logic';
@@ -22,25 +21,25 @@ export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows
   // @ts-ignore
   const data: string = e.data;
 
-  const rows = unfocusAllRows(currentRows);
-  let rowsWithSelection = markSelectedRows(rows);
+  const rowsWithSelection = markSelectedRows(currentRows);
+  let rows = unfocusAllRows(rowsWithSelection);
 
-  if (shouldDeleteSelectedRows(rowsWithSelection)) {
-    rowsWithSelection = deleteSelectedRows(rowsWithSelection);
+  if (shouldDeleteSelectedRows(rows)) {
+    rows = deleteSelectedRows(rows);
   }
 
   // After deleting selected rows, we need to get the first selected row because now it's the focused row
-  const firstSelectedRow = getFirstSelectedRow(rowsWithSelection)!;
-  const firstSelectedRowIndex = rowsWithSelection.indexOf(firstSelectedRow);
+  const firstSelectedRow = getFirstSelectedRow(rows)!;
+  const firstSelectedRowIndex = rows.indexOf(firstSelectedRow);
 
   if (data === ENTER_INPUT_EVENT_DATA) {
-    rowsWithSelection = addNewRowWithFocus(rowsWithSelection, firstSelectedRowIndex, firstSelectedRow.endColumn!);
+    rows = addNewRowWithFocus(rows, firstSelectedRowIndex, firstSelectedRow.endColumn!);
   } else {
     firstSelectedRow.text = addTextToRow(firstSelectedRow, data, firstSelectedRow.startColumn!);
     firstSelectedRow.focusColumn = firstSelectedRow.startColumn! + data.length;
   }
 
-  return mapRowsWithSelectionToRow(rowsWithSelection);
+  return mapRowsWithSelectionToRow(rows);
 };
 
 export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]): Row[] => {
@@ -175,7 +174,7 @@ export const deleteCharFromRow = (
   return rows;
 };
 
-export const unfocusAllRows = (rows: Row[]): Row[] => {
+export const unfocusAllRows = (rows: RowWithSelectedInfo[]): RowWithSelectedInfo[] => {
   return rows.map((row) => ({ ...row, focusColumn: undefined }));
 };
 
