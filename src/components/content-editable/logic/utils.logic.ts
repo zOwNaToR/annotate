@@ -16,10 +16,6 @@ export const addTextToRow = (focusedRow: Row, text: string, position: number) =>
   return focusedRow.text.slice(0, position) + text + focusedRow.text.slice(position);
 };
 
-// export const orderRows = <T extends Row>(rows: T[]): T[] => {
-//   return rows.sort((curr, next) => curr.index - next.index);
-// };
-
 export const mapRowsWithSelectionToRow = (rows: RowWithSelectedInfo[]) => {
   return rows.map((x) => ({ key: x.key, text: x.text, focusColumn: x.focusColumn }));
 };
