@@ -1,5 +1,5 @@
 import { RowWithSelectedInfo } from '@/components/content-editable/types';
-import { removeMiddleRows } from '@/components/content-editable/logic/logic';
+import { removeMiddleRows } from '@/components/content-editable/logic/main/logic';
 
 describe('removeFullySelectedRows', () => {
   it('Should remove nothing with only one row', () => {
@@ -7,7 +7,6 @@ describe('removeFullySelectedRows', () => {
       {
         key: '1',
         text: 'Hi',
-        index: 1,
         selected: true,
         node: {} as unknown as Node,
         isStartingRow: true,
@@ -26,7 +25,6 @@ describe('removeFullySelectedRows', () => {
       {
         key: '1',
         text: 'Hi',
-        index: 1,
         selected: true,
         node: {} as unknown as Node,
         isStartingRow: true,
@@ -38,7 +36,6 @@ describe('removeFullySelectedRows', () => {
       {
         key: '2',
         text: 'You',
-        index: 2,
         selected: true,
         node: {} as unknown as Node,
         isStartingRow: false,

@@ -1,8 +1,8 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { Row } from './types';
-import { onInputLogic, onShortcutLogic } from './logic/logic';
-import { setNewCaretPosition } from './logic/selection.logic';
-import { getDomRowElementByKey, renderRowTextToHtml } from './logic/dom.logic';
+import { onInputLogic, onShortcutLogic } from './logic/main/logic';
+import { setNewCaretPosition } from './logic/selection/selection';
+import { getDomRowElementByKey, renderRowTextToHtml } from './logic/dom/dom';
 
 export interface IContentEditableProps {
   htmlStructure: Row[];

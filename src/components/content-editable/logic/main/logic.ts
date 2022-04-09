@@ -5,14 +5,14 @@ import {
   getFirstSelectedRow,
   markSelectedRows,
   shouldDeleteSelectedRows,
-} from '@/components/content-editable/logic/selection.logic';
+} from '@/components/content-editable/logic/selection/selection';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import { generateRandomId } from '@/utils/utils';
 import {
   addTextToRow,
   mapRowsWithSelectionToRow,
   shouldPreventDefault,
-} from '@/components/content-editable/logic/utils.logic';
+} from '@/components/content-editable/logic/utils/utils';
 
 // Entrypoint - Functions for handling events
 export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]): Row[] => {

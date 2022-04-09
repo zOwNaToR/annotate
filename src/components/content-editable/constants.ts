@@ -1,5 +1,5 @@
 import { KEY_ACTION_MAP_TYPE } from '@/components/content-editable/types';
-import { handleBackspace, handleDelete } from '@/components/content-editable/keyDownActions';
+import { handleBackspace, handleDelete } from '@/components/content-editable/logic/keyDownActions';
 
 export const ENTER_INPUT_EVENT_DATA = '\n';
 export const BACKSPACE_KEY_DOWN = 'Backspace';
