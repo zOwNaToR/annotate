@@ -1,7 +1,7 @@
 import { PartialBy } from '@/utils/types';
 
 // KeyDown
-export type KeyAction = (ctrlKey: boolean, shiftKey: boolean) => HTMLElement | string | void;
+export type KeyAction = (currentRows: Row[], ctrlKey: boolean, shiftKey: boolean) => RowWithSelectedInfo[];
 export type KeyMap = {
   action: KeyAction;
   preventDefault: boolean | ((ctrlKey: boolean, shiftKey: boolean) => boolean);

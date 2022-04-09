@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { Row } from './types';
-import { onInputLogic } from './logic/logic';
+import { onInputLogic, onShortcutLogic } from './logic/logic';
 import { setNewCaretPosition } from './logic/selection.logic';
 import { getDomRowElementByKey, renderRowTextToHtml } from './logic/dom.logic';
 
@@ -39,6 +39,11 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onCh
 
   const handleShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
     console.log(e);
+
+    const newContentStructure = onShortcutLogic(e, contentStructure);
+
+    setContentStructure(newContentStructure);
+    onChange(newContentStructure);
   };
 
   return (

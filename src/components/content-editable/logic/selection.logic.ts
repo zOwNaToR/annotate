@@ -57,9 +57,7 @@ export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
 };
 
 export const shouldDeleteSelectedRows = (rows: RowWithSelectedInfo[]) => {
-  const firstSelectedRow = getFirstSelectedRow(rows)!;
-
-  return getSelection().type === 'Range' || firstSelectedRow.startColumn! < firstSelectedRow.endColumn!;
+  return getSelection().type === 'Range' && rows.some((row) => row.selected);
 };
 
 export const getSelection = (): Selection => {
