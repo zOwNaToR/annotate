@@ -21,7 +21,7 @@ export const handleBackspace: KeyAction = (currentRows: Row[]) => {
     const firstSelectedRow = getFirstSelectedRow(rows);
     if (!firstSelectedRow) return rows;
 
-    rows = deleteCharFromRow(rows, firstSelectedRow, true);
+    rows = deleteCharFromRow(rows, firstSelectedRow, false, true);
   }
 
   return rows;
@@ -41,7 +41,7 @@ export const handleDelete: KeyAction = (currentRows: Row[]) => {
     const firstSelectedRow = getFirstSelectedRow(rows);
     if (!firstSelectedRow) return rows;
 
-    rows = deleteCharFromRow(rows, firstSelectedRow, true);
+    rows = deleteCharFromRow(rows, firstSelectedRow, true, true);
   }
 
   return rows;

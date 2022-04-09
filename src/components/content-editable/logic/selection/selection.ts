@@ -116,7 +116,7 @@ export const deleteSelectedRows = (rows: RowWithSelectedInfo[]): RowWithSelected
   // At this point we have 2 selected rows
   const firstSelectedRowIndex = rows.indexOf(selectedRows[0]);
 
-  rows.splice(firstSelectedRowIndex, 2, mergeRows(selectedRows[0], selectedRows[1]));
+  rows.splice(firstSelectedRowIndex, 2, mergeRows(selectedRows[0], selectedRows[1], false, true));
   return rows;
 };
 

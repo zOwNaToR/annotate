@@ -86,41 +86,37 @@ const splitRow = (
 };
 
 export const mergeRows = (
-  startingRow: RowWithSelectedInfo,
-  endingRow: RowWithSelectedInfo,
+  mainRow: RowWithSelectedInfo, // MainRow will be focused if focusRow is true
+  otherRow: RowWithSelectedInfo,
+  keepAllText: boolean,
   focusRow?: boolean,
 ): RowWithSelectedInfo => {
-  if (!startingRow.selected) {
-    // If not selected the focus is on the ending row and the User pressed 'Delete'
-    return {
-      selected: true,
-      key: startingRow.key,
-      text: `${startingRow.text}${endingRow.text}`,
-      isStartingRow: true,
-      isMiddleRow: false,
-      isEndingRow: true,
-      startColumn: startingRow.text.length,
-      endColumn: startingRow.text.length,
-      node: startingRow.node!,
-      focusColumn: focusRow ? startingRow.text.length : undefined,
-    };
+  let startColumn = mainRow.startColumn!;
+  let endColumn = mainRow.endColumn!;
+  let focusColumn = focusRow ? 0 : undefined;
+  let text = `${mainRow.text.substring(0, mainRow.startColumn!)}${otherRow.text.substring(
+    otherRow.endColumn!,
+    otherRow.text.length,
+  )}`;
+
+  if (keepAllText) {
+    startColumn = mainRow.text.length;
+    endColumn = mainRow.text.length;
+    focusColumn = focusRow ? mainRow.text.length : undefined;
+    text = `${mainRow.text}${otherRow.text}`;
   }
 
-  // If selected the focus is on the starting row and the User pressed 'Enter''
   return {
     selected: true,
-    key: startingRow.key,
-    text: `${startingRow.text.substring(0, startingRow.startColumn!)}${endingRow.text.substring(
-      endingRow.endColumn!,
-      endingRow.text.length,
-    )}`,
+    key: mainRow.key,
+    node: mainRow.node!,
     isStartingRow: true,
     isMiddleRow: false,
     isEndingRow: true,
-    startColumn: startingRow.startColumn!,
-    endColumn: startingRow.startColumn!,
-    node: startingRow.node!,
-    focusColumn: focusRow ? 0 : undefined,
+    startColumn,
+    endColumn,
+    focusColumn,
+    text,
   };
 };
 
@@ -159,13 +155,13 @@ export const deleteCharFromRow = (
 
   // If the caret is at the end of the line, we have to merge row with the next one
   if (invertedDirection && caretIsAtTheEndOfTheRow) {
-    rows.splice(rowIndex, 2, mergeRows(row, nextRow));
+    rows.splice(rowIndex, 2, mergeRows(row, nextRow, true, true));
     return rows;
   }
 
   // If the caret is at the start of the line, we have to merge row with the previous one
   if (!invertedDirection && caretIsAtTheStartOfTheRow) {
-    rows.splice(rowIndex - 1, 2, mergeRows(previousRow, row));
+    rows.splice(rowIndex - 1, 2, mergeRows(previousRow, row, true, true));
     return rows;
   }
 

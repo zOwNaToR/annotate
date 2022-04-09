@@ -30,7 +30,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onCh
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
-    console.log(e);
+    // console.log(e);
     // const newContentStructure = onInputLogic(e, contentStructure);
     //
     // setContentStructure(newContentStructure);
@@ -38,7 +38,7 @@ const ContentEditable: React.VFC<IContentEditableProps> = ({ htmlStructure, onCh
   };
 
   const handleShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    console.log(e);
+    // console.log(e);
 
     const newContentStructure = onShortcutLogic(e, contentStructure);
 
