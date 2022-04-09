@@ -33,7 +33,7 @@ export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows
   const firstSelectedRowIndex = rows.indexOf(firstSelectedRow);
 
   if (data === ENTER_INPUT_EVENT_DATA) {
-    rows = addNewRowWithFocus(rows, firstSelectedRowIndex, firstSelectedRow.endColumn!);
+    rows = addNewRow(rows, firstSelectedRowIndex, firstSelectedRow.endColumn!, true);
   } else {
     firstSelectedRow.text = addTextToRow(firstSelectedRow, data, firstSelectedRow.startColumn!);
     firstSelectedRow.focusColumn = firstSelectedRow.startColumn! + data.length;
@@ -54,11 +54,15 @@ export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentR
 };
 
 // Helper functions
-const addNewRowWithFocus = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtColumn: number) => {
+const addNewRow = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtColumn: number, focusNewRow?: boolean) => {
   const sourceRow = rows[insertAtRow];
   const sourceRowIndex = rows.indexOf(sourceRow);
 
   const [, newRow] = splitRow(sourceRow, insertAtColumn);
+
+  if (focusNewRow) {
+    newRow.focusColumn = 0;
+  }
 
   rows.splice(sourceRowIndex + 1, 0, newRow);
   return rows;
@@ -73,7 +77,6 @@ const splitRow = (
     ...sourceRow,
     key: generateRandomId(5),
     text: sourceRow.text.slice(splitFromColumn, sourceRow.text.length),
-    focusColumn: 0,
   };
 
   // Remove text after insertAtColumn
@@ -82,7 +85,11 @@ const splitRow = (
   return [sourceRow, newRow];
 };
 
-export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSelectedInfo): RowWithSelectedInfo => {
+export const mergeRows = (
+  startingRow: RowWithSelectedInfo,
+  endingRow: RowWithSelectedInfo,
+  focusRow?: boolean,
+): RowWithSelectedInfo => {
   if (!startingRow.selected) {
     // If not selected the focus is on the ending row and the User pressed 'Delete'
     return {
@@ -95,7 +102,7 @@ export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSe
       startColumn: startingRow.text.length,
       endColumn: startingRow.text.length,
       node: startingRow.node!,
-      focusColumn: startingRow.text.length,
+      focusColumn: focusRow ? startingRow.text.length : undefined,
     };
   }
 
@@ -113,29 +120,24 @@ export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSe
     startColumn: startingRow.startColumn!,
     endColumn: startingRow.startColumn!,
     node: startingRow.node!,
-    focusColumn: 0,
+    focusColumn: focusRow ? 0 : undefined,
   };
 };
-
-// export const removeRow = (rowToDelete: RowWithSelectedInfo[], row: Row) => {
-//   const precedingRow = rowToDelete[row.index - 1];
-//   precedingRow.focusColumn = precedingRow.text.length;
-//
-//   rowToDelete.splice(row.index, 1);
-//
-//   return rowToDelete;
-// };
 
 export const deleteCharFromRow = (
   rows: RowWithSelectedInfo[],
   row: RowWithSelectedInfo,
   invertedDirection?: boolean,
+  focusRowAfterDelete?: boolean,
 ) => {
   const rowIndex = rows.indexOf(row);
 
   // If there is only one row, and it's already empty, we can't delete
   if (rows.length === 1 && !row.text.length) {
-    rows[rowIndex].focusColumn = 0;
+    if (focusRowAfterDelete) {
+      rows[rowIndex].focusColumn = 0;
+    }
+
     return rows;
   }
 
@@ -148,7 +150,10 @@ export const deleteCharFromRow = (
   // If the user pressed Cancel button, the caret is at the end of the row, and we have not a next row
   // set the caret to the end of the line and return
   if (invertedDirection && caretIsAtTheEndOfTheRow && !nextRow) {
-    rows[rowIndex].focusColumn = row.text.length;
+    if (focusRowAfterDelete) {
+      rows[rowIndex].focusColumn = row.text.length;
+    }
+
     return rows;
   }
 
@@ -168,7 +173,9 @@ export const deleteCharFromRow = (
   const removeCharTo = invertedDirection ? row.startColumn! + 1 : row.startColumn!;
 
   row.text = row.text.removeChars(removeCharFrom, removeCharTo);
-  row.focusColumn = removeCharFrom;
+  if (focusRowAfterDelete) {
+    row.focusColumn = removeCharFrom;
+  }
 
   rows[rowIndex] = row;
   return rows;
@@ -181,3 +188,12 @@ export const unfocusAllRows = (rows: RowWithSelectedInfo[]): RowWithSelectedInfo
 export const removeMiddleRows = (rows: RowWithSelectedInfo[]) => {
   return rows.removeItems((row) => row.selected && row.isMiddleRow);
 };
+
+// export const removeRow = (rowToDelete: RowWithSelectedInfo[], row: Row) => {
+//   const precedingRow = rowToDelete[row.index - 1];
+//   precedingRow.focusColumn = precedingRow.text.length;
+//
+//   rowToDelete.splice(row.index, 1);
+//
+//   return rowToDelete;
+// };
