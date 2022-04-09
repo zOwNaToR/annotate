@@ -8,41 +8,41 @@ import {
 import { deleteCharFromRow, unfocusAllRows } from '@/components/content-editable/logic/logic';
 
 export const handleBackspace: KeyAction = (currentRows: Row[]) => {
-  const rows = unfocusAllRows(currentRows);
-  let rowsWithSelection = markSelectedRows(rows);
+  const rowsWithSelection = markSelectedRows(currentRows);
+  let rows = unfocusAllRows(rowsWithSelection);
 
-  if (shouldDeleteSelectedRows(rowsWithSelection)) {
-    rowsWithSelection = deleteSelectedRows(rowsWithSelection);
+  if (shouldDeleteSelectedRows(rows)) {
+    rows = deleteSelectedRows(rows);
 
     // After deleting selected rows, we need to get the first selected row because now it's the focused row
-    const firstSelectedRow = getFirstSelectedRow(rowsWithSelection)!;
+    const firstSelectedRow = getFirstSelectedRow(rows)!;
     firstSelectedRow.focusColumn = firstSelectedRow.startColumn!;
   } else {
-    const firstSelectedRow = getFirstSelectedRow(rowsWithSelection);
-    if (!firstSelectedRow) return rowsWithSelection;
+    const firstSelectedRow = getFirstSelectedRow(rows);
+    if (!firstSelectedRow) return rows;
 
-    rowsWithSelection = deleteCharFromRow(rowsWithSelection, firstSelectedRow);
+    rows = deleteCharFromRow(rows, firstSelectedRow);
   }
 
-  return rowsWithSelection;
+  return rows;
 };
 
 export const handleDelete: KeyAction = (currentRows: Row[]) => {
-  const rows = unfocusAllRows(currentRows);
-  let rowsWithSelection = markSelectedRows(rows);
+  const rowsWithSelection = markSelectedRows(currentRows);
+  let rows = unfocusAllRows(rowsWithSelection);
 
-  if (shouldDeleteSelectedRows(rowsWithSelection)) {
-    rowsWithSelection = deleteSelectedRows(rowsWithSelection);
+  if (shouldDeleteSelectedRows(rows)) {
+    rows = deleteSelectedRows(rows);
 
     // After deleting selected rows, we need to get the first selected row because now it's the focused row
-    const firstSelectedRow = getFirstSelectedRow(rowsWithSelection)!;
+    const firstSelectedRow = getFirstSelectedRow(rows)!;
     firstSelectedRow.focusColumn = firstSelectedRow.startColumn!;
   } else {
-    const firstSelectedRow = getFirstSelectedRow(rowsWithSelection);
-    if (!firstSelectedRow) return rowsWithSelection;
+    const firstSelectedRow = getFirstSelectedRow(rows);
+    if (!firstSelectedRow) return rows;
 
-    rowsWithSelection = deleteCharFromRow(rowsWithSelection, firstSelectedRow, true);
+    rows = deleteCharFromRow(rows, firstSelectedRow, true);
   }
 
-  return rowsWithSelection;
+  return rows;
 };
