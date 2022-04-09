@@ -1,6 +1,12 @@
-import { PartialRowWithSelectedInfo, Row, RowWithSelectedInfo } from '@/components/content-editable/types';
+import {
+  PartialRowWithSelectedInfo,
+  Row,
+  RowWithSelectedInfo,
+  StartEndColumns,
+} from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
 import { orderRows } from '@/components/content-editable/logic/utils.logic';
+import { mergeRows, removeMiddleRows } from '@/components/content-editable/logic/logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
   const selection = window.getSelection()!;
@@ -60,10 +66,7 @@ export const getSelection = (): Selection => {
   return window.getSelection()!;
 };
 
-const getRowStartEndColumns = (
-  row: PartialRowWithSelectedInfo,
-  selection: Selection,
-): { startColumn: number; endColumn: number } => {
+const getRowStartEndColumns = (row: PartialRowWithSelectedInfo, selection: Selection): StartEndColumns<number> => {
   if (row.isStartingRow) {
     return {
       startColumn: selection.focusOffset,
@@ -130,10 +133,6 @@ export const deleteSelectedRows = (rows: RowWithSelectedInfo[]): RowWithSelected
   }
 };
 
-export const removeMiddleRows = (rows: RowWithSelectedInfo[]) => {
-  return rows.removeItems((row) => row.selected && row.isMiddleRow);
-};
-
 export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {
   return rows.map((row) => {
     if (!row.selected) return row;
@@ -141,23 +140,4 @@ export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {
     row.text = row.text.removeChars(row.startColumn, row.endColumn);
     return row;
   });
-};
-
-export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSelectedInfo): RowWithSelectedInfo => {
-  return {
-    selected: true,
-    key: startingRow.key,
-    text: `${startingRow.text.substring(0, startingRow.startColumn!)}${endingRow.text.substring(
-      endingRow.endColumn!,
-      endingRow.text.length,
-    )}`,
-    isStartingRow: true,
-    isMiddleRow: false,
-    isEndingRow: true,
-    startColumn: startingRow.startColumn!,
-    endColumn: startingRow.startColumn!,
-    node: startingRow.node!,
-    index: startingRow.index,
-    focusColumn: 0,
-  };
 };

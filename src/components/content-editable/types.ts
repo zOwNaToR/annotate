@@ -11,6 +11,7 @@ export type KEY_ACTION_MAP_TYPE = {
   [key: string]: KeyMap;
 };
 
+// Rows
 export type Row = {
   key: string;
   text: string;
@@ -18,26 +19,26 @@ export type Row = {
   focusColumn?: number;
 };
 
+export type StartEndColumns<T extends number | never> = {
+  startColumn: number;
+  endColumn: number;
+};
+
 type RowSelectedInfo =
-  | {
+  | (Partial<StartEndColumns<never>> & {
       selected: false;
       node?: never;
       isStartingRow?: never;
       isMiddleRow?: never;
       isEndingRow?: never;
-      startColumn?: never;
-      endColumn?: never;
-    }
-  | {
+    })
+  | (StartEndColumns<number> & {
       selected: true;
       node: Node;
       isStartingRow: boolean;
       isMiddleRow: boolean;
       isEndingRow: boolean;
-      startColumn: number;
-      endColumn: number;
-    };
+    });
 
 export type RowWithSelectedInfo = Row & RowSelectedInfo;
-
 export type PartialRowWithSelectedInfo = PartialBy<RowWithSelectedInfo, 'startColumn' | 'endColumn'>;

@@ -8,7 +8,7 @@ import {
 } from '@/components/content-editable/logic/selection.logic';
 import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
 import { generateRandomId } from '@/utils/utils';
-import { addTextToRow, getRowByKey, shouldPreventDefault } from '@/components/content-editable/logic/utils.logic';
+import { addTextToRow, shouldPreventDefault } from '@/components/content-editable/logic/utils.logic';
 
 // Entrypoint - Functions for handling events
 export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]): Row[] => {
@@ -75,6 +75,29 @@ const splitRow = (sourceRow: RowWithSelectedInfo, splitFromColumn: number) => {
   return [sourceRow, newRow];
 };
 
+export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSelectedInfo): RowWithSelectedInfo => {
+  return {
+    selected: true,
+    key: startingRow.key,
+    text: `${startingRow.text.substring(0, startingRow.startColumn!)}${endingRow.text.substring(
+      endingRow.endColumn!,
+      endingRow.text.length,
+    )}`,
+    isStartingRow: true,
+    isMiddleRow: false,
+    isEndingRow: true,
+    startColumn: startingRow.startColumn!,
+    endColumn: startingRow.startColumn!,
+    node: startingRow.node!,
+    index: startingRow.index,
+    focusColumn: 0,
+  };
+};
+
 const unfocusAllRows = (rows: Row[]): Row[] => {
   return rows.map((row) => ({ ...row, focusColumn: undefined }));
+};
+
+export const removeMiddleRows = (rows: RowWithSelectedInfo[]) => {
+  return rows.removeItems((row) => row.selected && row.isMiddleRow);
 };
