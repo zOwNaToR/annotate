@@ -15,7 +15,6 @@ export type KEY_ACTION_MAP_TYPE = {
 export type Row = {
   key: string;
   text: string;
-  index: number;
   focusColumn?: number;
 };
 

@@ -31,9 +31,10 @@ export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows
 
   // After deleting selected rows, we need to get the first selected row because now it's the focused row
   const firstSelectedRow = getFirstSelectedRow(rowsWithSelection)!;
+  const firstSelectedRowIndex = rowsWithSelection.indexOf(firstSelectedRow);
 
   if (data === ENTER_INPUT_EVENT_DATA) {
-    rowsWithSelection = addNewRowWithFocus(rowsWithSelection, firstSelectedRow.index, firstSelectedRow.endColumn!);
+    rowsWithSelection = addNewRowWithFocus(rowsWithSelection, firstSelectedRowIndex, firstSelectedRow.endColumn!);
   } else {
     firstSelectedRow.text = addTextToRow(firstSelectedRow, data, firstSelectedRow.startColumn!);
     firstSelectedRow.focusColumn = firstSelectedRow.startColumn! + data.length;
@@ -56,10 +57,11 @@ export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentR
 // Helper functions
 const addNewRowWithFocus = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtColumn: number) => {
   const sourceRow = rows[insertAtRow];
+  const sourceRowIndex = rows.indexOf(sourceRow);
 
   const [, newRow] = splitRow(sourceRow, insertAtColumn);
 
-  rows.splice(newRow.index, 0, newRow);
+  rows.splice(sourceRowIndex + 1, 0, newRow);
   return rows;
 };
 
@@ -73,7 +75,6 @@ const splitRow = (
     key: generateRandomId(5),
     text: sourceRow.text.slice(splitFromColumn, sourceRow.text.length),
     focusColumn: 0,
-    index: sourceRow.index + 1,
   };
 
   // Remove text after insertAtColumn
@@ -95,7 +96,6 @@ export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSe
       startColumn: startingRow.text.length,
       endColumn: startingRow.text.length,
       node: startingRow.node!,
-      index: startingRow.index,
       focusColumn: startingRow.text.length,
     };
   }
@@ -114,69 +114,64 @@ export const mergeRows = (startingRow: RowWithSelectedInfo, endingRow: RowWithSe
     startColumn: startingRow.startColumn!,
     endColumn: startingRow.startColumn!,
     node: startingRow.node!,
-    index: startingRow.index,
     focusColumn: 0,
   };
 };
 
-export const removeRow = (rowToDelete: RowWithSelectedInfo[], row: Row) => {
-  const precedingRow = rowToDelete[row.index - 1];
-  precedingRow.focusColumn = precedingRow.text.length;
-
-  rowToDelete.splice(row.index, 1);
-
-  return rowToDelete;
-};
+// export const removeRow = (rowToDelete: RowWithSelectedInfo[], row: Row) => {
+//   const precedingRow = rowToDelete[row.index - 1];
+//   precedingRow.focusColumn = precedingRow.text.length;
+//
+//   rowToDelete.splice(row.index, 1);
+//
+//   return rowToDelete;
+// };
 
 export const deleteCharFromRow = (
   rows: RowWithSelectedInfo[],
   row: RowWithSelectedInfo,
   invertedDirection?: boolean,
 ) => {
-  const caretIsAtTheStartOfTheRow = row.startColumn === 0;
-  const caretIsAtTheEndOfTheRow = row.startColumn === row.text.length;
-
-  const previousRow = rows[row.index - 1];
-  const nextRow = rows[row.index + 1];
+  const rowIndex = rows.indexOf(row);
 
   // If there is only one row, and it's already empty, we can't delete
   if (rows.length === 1 && !row.text.length) {
-    rows[row.index].focusColumn = 0;
+    rows[rowIndex].focusColumn = 0;
     return rows;
   }
+
+  const caretIsAtTheStartOfTheRow = row.startColumn === 0;
+  const caretIsAtTheEndOfTheRow = row.startColumn === row.text.length;
+
+  const previousRow = rows[rowIndex - 1];
+  const nextRow = rows[rowIndex + 1];
 
   // If the user pressed Cancel button, the caret is at the end of the row, and we have not a next row
   // set the caret to the end of the line and return
   if (invertedDirection && caretIsAtTheEndOfTheRow && !nextRow) {
-    rows[row.index].focusColumn = row.text.length;
+    rows[rowIndex].focusColumn = row.text.length;
     return rows;
   }
 
-  if (invertedDirection) {
-    // If the caret is at the end of the line, we have to merge row with the next one
-    if (caretIsAtTheEndOfTheRow) {
-      // Keep all rows except focused and next, because we will merge them
-      const rowsToKeep = rows.removeItems((x) => [row, nextRow].includes(x));
-
-      return [...rowsToKeep, mergeRows(row, nextRow)];
-    }
-
-    row.text = row.text.removeChars(row.startColumn!, row.startColumn! + 1);
-    row.focusColumn = row.startColumn!;
-  } else {
-    // If the caret is at the start of the line, we have to merge row with the previous one
-    if (caretIsAtTheStartOfTheRow) {
-      // Keep all rows except focused and previous, because we will merge them
-      const rowsToKeep = rows.removeItems((x) => [row, previousRow].includes(x));
-
-      return [...rowsToKeep, mergeRows(previousRow, row)];
-    }
-
-    row.text = row.text.removeChars(row.startColumn! - 1, row.startColumn!);
-    row.focusColumn = row.startColumn! - 1;
+  // If the caret is at the end of the line, we have to merge row with the next one
+  if (invertedDirection && caretIsAtTheEndOfTheRow) {
+    rows.splice(rowIndex, 2, mergeRows(row, nextRow));
+    return rows;
   }
 
-  rows[row.index] = row;
+  // If the caret is at the start of the line, we have to merge row with the previous one
+  if (!invertedDirection && caretIsAtTheStartOfTheRow) {
+    rows.splice(rowIndex - 1, 2, mergeRows(previousRow, row));
+    return rows;
+  }
+
+  const removeCharFrom = invertedDirection ? row.startColumn! : row.startColumn! - 1;
+  const removeCharTo = invertedDirection ? row.startColumn! + 1 : row.startColumn!;
+
+  row.text = row.text.removeChars(removeCharFrom, removeCharTo);
+  row.focusColumn = removeCharFrom;
+
+  rows[rowIndex] = row;
   return rows;
 };
 

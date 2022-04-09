@@ -5,7 +5,6 @@ import {
   StartEndColumns,
 } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom.logic';
-import { orderRows } from '@/components/content-editable/logic/utils.logic';
 import { mergeRows, removeMiddleRows } from '@/components/content-editable/logic/logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
@@ -106,29 +105,19 @@ export const getFirstSelectedRow = (rows: RowWithSelectedInfo[]) => {
 };
 
 export const deleteSelectedRows = (rows: RowWithSelectedInfo[]): RowWithSelectedInfo[] => {
-  // if (type === 'Caret') {
-  //   const selectedRow = selectedRows[0];
-  //   const row = getRowByKey(rows, selectedRow.key)!;
-  //
-  //   if (deleteFromEnd) {
-  //     row.text = removeCharsFromString(row.text, selectedRow.startColumn - 1, selectedRow.startColumn);
-  //   } else {
-  //     row.text = removeCharsFromString(row.text, selectedRow.startColumn, selectedRow.startColumn + 1);
-  //   }
-  //
-  //   return rows;
-  // }
-
   rows = removeMiddleRows(rows);
 
   const selectedRows = rows.filter((x) => x.selected);
-  const unSelectedRows = rows.filter((x) => !x.selected);
 
   if (selectedRows.length === 1) {
-    return orderRows([...unSelectedRows, ...removeSelectedTextFromRows(rows)]);
-  } else {
-    return orderRows([...unSelectedRows, mergeRows(selectedRows[0], selectedRows[1])]);
+    return [...removeSelectedTextFromRows(rows)];
   }
+
+  // At this point we have 2 selected rows
+  const firstSelectedRowIndex = rows.indexOf(selectedRows[0]);
+
+  rows.splice(firstSelectedRowIndex, 2, mergeRows(selectedRows[0], selectedRows[1]));
+  return rows;
 };
 
 export const removeSelectedTextFromRows = (rows: RowWithSelectedInfo[]) => {

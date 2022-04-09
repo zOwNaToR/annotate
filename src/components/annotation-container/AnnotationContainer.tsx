@@ -17,7 +17,6 @@ const AnnotationContainer: React.VFC<IAnnotationContainerProps> = ({ position })
     {
       key: 'first',
       text: '',
-      index: 0,
       focusColumn: 0,
     },
   ]);
