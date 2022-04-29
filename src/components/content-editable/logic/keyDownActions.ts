@@ -5,7 +5,7 @@ import {
   markSelectedRows,
   shouldDeleteSelectedRows,
 } from '@/components/content-editable/logic/selection/selection';
-import { deleteCharFromRow, unfocusAllRows } from '@/components/content-editable/logic/main/logic';
+import { deleteCharFromRow, unfocusAllRows } from '@/components/content-editable/logic/logic';
 
 export const handleBackspace: KeyAction = (currentRows: Row[]) => {
   const rowsWithSelection = markSelectedRows(currentRows);

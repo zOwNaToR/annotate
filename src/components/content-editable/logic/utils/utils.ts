@@ -15,3 +15,20 @@ export const addTextToRow = (focusedRow: RowWithSelectedInfo, text: string, posi
 export const mapRowsWithSelectionToRow = (rows: RowWithSelectedInfo[]) => {
   return rows.map((x) => ({ key: x.key, text: x.text, focusColumn: x.focusColumn }));
 };
+
+// New
+export const splitText = (text: string, position: number) => {
+  return [text.slice(0, position), text.slice(position)] as const;
+};
+
+export const addTextAtPosition = (text: string, position: number, textToAdd: string) => {
+  return text.slice(0, position) + textToAdd + text.slice(position);
+};
+
+export const removeCharsFromString = (text: string, from: number, to: number) => {
+  return text.slice(0, from) + text.slice(to);
+};
+
+export const removeSpacesFromString = (text: string) => {
+  return text.replace(/\s/g, '');
+};

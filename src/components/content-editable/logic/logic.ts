@@ -1,86 +1,20 @@
-import React from 'react';
-import { Row, RowWithSelectedInfo } from '@/components/content-editable/types';
-import {
-  deleteSelectedRows,
-  getFirstSelectedRow,
-  markSelectedRows,
-  shouldDeleteSelectedRows,
-} from '@/components/content-editable/logic/selection/selection';
-import { ENTER_INPUT_EVENT_DATA, KEY_ACTION_MAP } from '@/components/content-editable/constants';
+import { RowWithSelectedInfo } from '@/components/content-editable/types';
 import { generateRandomId } from '@/utils/utils';
-import {
-  addTextToRow,
-  mapRowsWithSelectionToRow,
-  shouldPreventDefault,
-} from '@/components/content-editable/logic/utils/utils';
+import { splitText } from '@/components/content-editable/logic/utils/utils';
 
-// Entrypoint - Functions for handling events
-export const onInputLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]): Row[] => {
-  e.preventDefault();
-
-  // @ts-ignore
-  const data: string = e.data;
-
-  const rowsWithSelection = markSelectedRows(currentRows);
-  let rows = unfocusAllRows(rowsWithSelection);
-
-  if (shouldDeleteSelectedRows(rows)) {
-    rows = deleteSelectedRows(rows);
-  }
-
-  // After deleting selected rows, we need to get the first selected row because now it's the focused row
-  const firstSelectedRow = getFirstSelectedRow(rows)!;
-  const firstSelectedRowIndex = rows.indexOf(firstSelectedRow);
-
-  if (data === ENTER_INPUT_EVENT_DATA) {
-    rows = addNewRow(rows, firstSelectedRowIndex, firstSelectedRow.endColumn!, true);
-  } else {
-    firstSelectedRow.text = addTextToRow(firstSelectedRow, data, firstSelectedRow.startColumn!);
-    firstSelectedRow.focusColumn = firstSelectedRow.startColumn! + data.length;
-  }
-
-  return mapRowsWithSelectionToRow(rows);
-};
-
-export const onShortcutLogic = (e: React.KeyboardEvent<HTMLDivElement>, currentRows: Row[]): Row[] => {
-  if (!(e.key in KEY_ACTION_MAP)) return currentRows;
-
-  const { ctrlKey, shiftKey } = e;
-  const keyMap = KEY_ACTION_MAP[e.key];
-
-  if (shouldPreventDefault(keyMap, ctrlKey, shiftKey)) e.preventDefault();
-
-  return mapRowsWithSelectionToRow(keyMap.action(currentRows, ctrlKey, shiftKey));
-};
-
-// Helper functions
-const addNewRow = (rows: RowWithSelectedInfo[], insertAtRow: number, insertAtColumn: number, focusNewRow?: boolean) => {
-  const sourceRow = rows[insertAtRow];
-  const sourceRowIndex = rows.indexOf(sourceRow);
-
-  const [, newRow] = splitRow(sourceRow, insertAtColumn);
-
-  if (focusNewRow) {
-    newRow.focusColumn = 0;
-  }
-
-  rows.splice(sourceRowIndex + 1, 0, newRow);
-  return rows;
-};
-
-const splitRow = (
+export const splitRow = (
   sourceRow: RowWithSelectedInfo,
   splitFromColumn: number,
 ): [RowWithSelectedInfo, RowWithSelectedInfo] => {
+  const [sourceRowText, newRowText] = splitText(sourceRow.text, splitFromColumn);
+  sourceRow.text = sourceRowText;
+
   // Create new row with text copied from sourceRow, from "splitFromColumn" to the end of the row.
   const newRow: RowWithSelectedInfo = {
     ...sourceRow,
     key: generateRandomId(5),
-    text: sourceRow.text.slice(splitFromColumn, sourceRow.text.length),
+    text: newRowText,
   };
-
-  // Remove text after insertAtColumn
-  sourceRow.text = sourceRow.text.removeChars(splitFromColumn, sourceRow.text.length);
 
   return [sourceRow, newRow];
 };

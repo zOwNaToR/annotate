@@ -5,7 +5,7 @@ import {
   StartEndColumns,
 } from '@/components/content-editable/types';
 import { getDomClosestRowElement, getDomRowElementByKey } from '@/components/content-editable/logic/dom/dom';
-import { mergeRows, removeMiddleRows } from '@/components/content-editable/logic/main/logic';
+import { mergeRows, removeMiddleRows } from '@/components/content-editable/logic/logic';
 
 export const markSelectedRows = (rows: Row[]): RowWithSelectedInfo[] => {
   const selection = window.getSelection()!;
