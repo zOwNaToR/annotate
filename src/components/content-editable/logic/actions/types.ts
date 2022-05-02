@@ -34,3 +34,10 @@ export type DeleteTextActionParams = BaseAction & {
   endColumnIndex: number;
   shouldFocus?: boolean;
 };
+
+export type PasteRowsActionParams = BaseAction & {
+  rowIndex: number;
+  columnIndex: number;
+  rowsToPaste: string[];
+  shouldFocus?: boolean;
+};
