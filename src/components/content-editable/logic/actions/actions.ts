@@ -6,6 +6,7 @@ import {
 	DeleteRowActionParams,
 	DeleteSelectionActionParams,
 	DeleteTextActionParams,
+	GetRowSelectionLengthParams,
 	PasteRowsActionParams,
 } from './types';
 import { addTextAtPosition, removeCharsFromString } from '@/components/content-editable/logic/utils/utils';
@@ -128,5 +129,70 @@ export const deleteSelectionAction = ({
 	startColumnIndex,
 	endColumnIndex,
 }: DeleteSelectionActionParams): RowWithSelectedInfo[] => {
-	return currentRows;
+	const isOnlyOneRow = startRowIndex === endRowIndex;
+
+	if (isOnlyOneRow) {
+		const rowToUpdate = currentRows[startRowIndex];
+		rowToUpdate.text = removeCharsFromString(rowToUpdate.text, startColumnIndex, endColumnIndex);
+
+		return currentRows;
+	}
+
+	const rowsToUpdate = currentRows.slice(startRowIndex, endRowIndex + 1);
+
+	return rowsToUpdate.reduce<RowWithSelectedInfo[]>((acc, curr, i, array) => {
+		const isFirstRow = i === 0;
+		const isLastRow = i === array.length - 1;
+		const isFullySelected =
+			getRowSelectionLength({
+				rowText: curr.text,
+				rowIndex: i,
+				startRowIndex,
+				endRowIndex,
+				startColumnIndex,
+				endColumnIndex,
+			}) === curr.text.length;
+
+		if (!shouldDeleteRow(isFirstRow, isLastRow, isFullySelected)) {
+			if (isFirstRow) curr.text = removeCharsFromString(curr.text, startColumnIndex, endColumnIndex);
+			if (isLastRow) curr.text = removeCharsFromString(curr.text, 0, endColumnIndex);
+
+			acc.push(curr);
+		}
+
+		return acc;
+	}, []);
+};
+
+const shouldDeleteRow = (isFirstRow: boolean, isLastRow: boolean, isFullySelected: boolean): boolean => {
+	if (isFirstRow) return false;
+	if (isLastRow) return isFullySelected;
+
+	// Always delete middle rows
+	return true;
+};
+
+const getRowSelectionLength = ({
+	rowText,
+	rowIndex,
+	startRowIndex,
+	endRowIndex,
+	startColumnIndex,
+	endColumnIndex,
+}: GetRowSelectionLengthParams): number => {
+	if (rowIndex < startRowIndex || rowIndex > endRowIndex) throw Error('Row index is out of range');
+
+	// First row
+	if (rowIndex === startRowIndex) {
+		// Only one row selected
+		if (startRowIndex === endRowIndex) return endColumnIndex - startColumnIndex;
+
+		return rowText.length - startColumnIndex;
+	}
+
+	// Last row
+	if (rowIndex === endRowIndex) return endColumnIndex;
+
+	// Middle row
+	return rowText.length;
 };

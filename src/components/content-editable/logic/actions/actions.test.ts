@@ -2,6 +2,7 @@ import {
 	addRowAction,
 	addTextAction,
 	deleteRowAction,
+	deleteSelectionAction,
 	deleteTextAction,
 	pasteRowsAction,
 } from '@/components/content-editable/logic/actions/actions';
@@ -1033,5 +1034,158 @@ describe('pasteRowsAction', () => {
 });
 
 describe('deleteSelectionAction', () => {
-	it('should delete text from one row', () => {});
+	it('should delete text at the beginning of a row', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 0;
+		const endRowIndex = 0;
+		const endColumnIndex = 4;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi, how are you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'how are you?',
+				selected: false,
+			},
+		]);
+	});
+
+	it('should delete text in the middle of a row', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 4;
+		const endRowIndex = 0;
+		const endColumnIndex = 8;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi, how are you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'Hi, are you?',
+				selected: false,
+			},
+		]);
+	});
+
+	it('should delete text at the end of a row', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 11;
+		const endRowIndex = 0;
+		const endColumnIndex = 16;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi, how are you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'Hi, how are',
+				selected: false,
+			},
+		]);
+	});
+
+	it('should delete all the text in a row', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 0;
+		const endRowIndex = 0;
+		const endColumnIndex = 16;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi, how are you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: '',
+				selected: false,
+			},
+		]);
+	});
+
+	it('should delete a row', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 2;
+		const endRowIndex = 1;
+		const endColumnIndex = 12;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+			{
+				key: '2',
+				text: 'How are you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+		]);
+	});
 });

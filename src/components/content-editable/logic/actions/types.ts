@@ -49,3 +49,12 @@ export type DeleteSelectionActionParams = BaseAction & {
 	endColumnIndex: number;
 	shouldFocus?: boolean;
 };
+
+export type GetRowSelectionLengthParams = {
+	rowText: string;
+	rowIndex: number;
+	startRowIndex: number;
+	endRowIndex: number;
+	startColumnIndex: number;
+	endColumnIndex: number;
+};
