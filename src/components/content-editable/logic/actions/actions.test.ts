@@ -5,11 +5,9 @@ import {
 	deleteTextAction,
 	pasteRowsAction,
 } from '@/components/content-editable/logic/actions/actions';
-import { RowWithSelectedInfo } from '@/components/content-editable/types';
 import { RowToAdd } from '@/components/content-editable/logic/actions/types';
-import { beforeEach, describe } from 'vitest';
-import { Simulate } from 'react-dom/test-utils';
-import paste = Simulate.paste;
+import { RowWithSelectedInfo } from '@/components/content-editable/types';
+import { describe } from 'vitest';
 
 describe('addRowAction', () => {
 	it('should add an empty row after an empty row', () => {
@@ -963,4 +961,77 @@ describe('pasteRowsAction', () => {
 
 		expect(newRows.map((x) => x.text)).toEqual(['Hi mate,', 'How are you?']);
 	});
+
+	it('should focus after paste two rows at the starting of a row', () => {
+		const rowIndex = 0;
+		const columnIndex = 0;
+		const rowsToPaste = ['Hi,', 'How are '];
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'you?',
+				selected: false,
+			},
+		];
+
+		const newRows = pasteRowsAction({
+			currentRows,
+			rowIndex,
+			columnIndex,
+			rowsToPaste,
+			shouldFocus: true,
+		});
+
+		expect(newRows[1].focusColumn).toEqual(8);
+	});
+
+	it('should focus after paste two rows in the middle of a row', () => {
+		const rowIndex = 0;
+		const columnIndex = 2;
+		const rowsToPaste = [' mate,', 'How are'];
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi you?',
+				selected: false,
+			},
+		];
+
+		const newRows = pasteRowsAction({
+			currentRows,
+			rowIndex,
+			columnIndex,
+			rowsToPaste,
+			shouldFocus: true,
+		});
+
+		expect(newRows[1].focusColumn).toEqual(7);
+	});
+
+	it('should focus after paste two rows at the ending of a row', () => {
+		const rowIndex = 0;
+		const columnIndex = 2;
+		const rowsToPaste = [' mate,', 'How are you?'];
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+		];
+
+		const newRows = pasteRowsAction({
+			currentRows,
+			rowIndex,
+			columnIndex,
+			rowsToPaste,
+			shouldFocus: true,
+		});
+
+		expect(newRows[1].focusColumn).toEqual(12);
+	});
+});
+
+describe('deleteSelectionAction', () => {
+	it('should delete text from one row', () => {});
 });

@@ -4,6 +4,7 @@ import {
 	AddRowActionParams,
 	AddTextActionParams,
 	DeleteRowActionParams,
+	DeleteSelectionActionParams,
 	DeleteTextActionParams,
 	PasteRowsActionParams,
 } from './types';
@@ -84,6 +85,7 @@ export const pasteRowsAction = ({
 	rowIndex,
 	columnIndex,
 	rowsToPaste,
+	shouldFocus,
 }: PasteRowsActionParams): RowWithSelectedInfo[] => {
 	if (!rowsToPaste.length || !rowsToPaste.some((text) => text.length)) return currentRows;
 
@@ -91,24 +93,40 @@ export const pasteRowsAction = ({
 		const currentRow = currentRows[rowIndex];
 		currentRow.text = addTextAtPosition(currentRow.text, columnIndex, rowsToPaste[0]);
 
+		if (shouldFocus) {
+			currentRow.focusColumn = rowsToPaste[0].length;
+		}
+
 		return currentRows;
 	}
 
 	const rowAtIndex = currentRows[rowIndex];
-	const firstRowToPaste = rowsToPaste.shift();
-	const lastRowToPaste = rowsToPaste.pop();
-
-	const [firstRow, lastRow] = splitRow(rowAtIndex, columnIndex);
-	firstRow.text = `${firstRow.text}${firstRowToPaste}`;
-	lastRow.text = `${lastRowToPaste}${lastRow.text}`;
-
-	const middleRows = rowsToPaste.map<RowWithSelectedInfo>((text) => ({
+	const firstRowToPaste = rowsToPaste.shift()!;
+	const lastRowToPaste = rowsToPaste.pop()!;
+	const middleRowsToPaste = rowsToPaste.map<RowWithSelectedInfo>((text) => ({
 		text,
 		key: generateRandomId(5),
 		selected: false,
 	}));
 
-	currentRows.splice(rowIndex, 1, firstRow, ...[...middleRows, lastRow]);
+	const [firstRow, lastRow] = splitRow(rowAtIndex, columnIndex);
+	firstRow.text = `${firstRow.text}${firstRowToPaste}`;
+	lastRow.text = `${lastRowToPaste}${lastRow.text}`;
 
+	if (shouldFocus) {
+		lastRow.focusColumn = lastRowToPaste.length;
+	}
+
+	currentRows.splice(rowIndex, 1, firstRow, ...[...middleRowsToPaste, lastRow]);
+	return currentRows;
+};
+
+export const deleteSelectionAction = ({
+	currentRows,
+	startRowIndex,
+	endRowIndex,
+	startColumnIndex,
+	endColumnIndex,
+}: DeleteSelectionActionParams): RowWithSelectedInfo[] => {
 	return currentRows;
 };
