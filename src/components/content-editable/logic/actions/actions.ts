@@ -8,6 +8,7 @@ import {
 	DeleteTextActionParams,
 	GetRowSelectionLengthParams,
 	PasteRowsActionParams,
+	ShouldMergeRowsParams,
 } from './types';
 import { addTextAtPosition, removeCharsFromString } from '@/components/content-editable/logic/utils/utils';
 import { RowWithSelectedInfo } from '@/components/content-editable/types';
@@ -147,14 +148,13 @@ export const deleteSelectionAction = ({
 			getRowSelectionLength({
 				rowText: curr.text,
 				rowIndex: i,
-				startRowIndex,
-				endRowIndex,
+				selectedRowsLength: rowsToUpdate.length,
 				startColumnIndex,
 				endColumnIndex,
 			}) === curr.text.length;
 
 		if (!shouldDeleteRow(isFirstRow, isLastRow, isFullySelected)) {
-			if (isFirstRow) curr.text = removeCharsFromString(curr.text, startColumnIndex, endColumnIndex);
+			if (isFirstRow) curr.text = removeCharsFromString(curr.text, startColumnIndex, curr.text.length);
 			if (isLastRow) curr.text = removeCharsFromString(curr.text, 0, endColumnIndex);
 
 			acc.push(curr);
@@ -163,10 +163,27 @@ export const deleteSelectionAction = ({
 		return acc;
 	}, []);
 
+	if (
+		shouldMergeRows({
+			rows: updatedRows,
+			selectedRowsLength: rowsToUpdate.length,
+			startColumnIndex,
+			endColumnIndex,
+		})
+	) {
+		updatedRows[0] = mergeRows(updatedRows[0], updatedRows.at(-1)!, startColumnIndex, endColumnIndex);
+		updatedRows.pop();
+	}
+
 	currentRows.splice(startRowIndex, 0, ...updatedRows);
 
 	return currentRows;
 };
+
+// Ciao
+// Io
+// Sono
+// Omar
 
 const shouldDeleteRow = (isFirstRow: boolean, isLastRow: boolean, isFullySelected: boolean): boolean => {
 	if (isFirstRow) return false;
@@ -179,24 +196,52 @@ const shouldDeleteRow = (isFirstRow: boolean, isLastRow: boolean, isFullySelecte
 const getRowSelectionLength = ({
 	rowText,
 	rowIndex,
-	startRowIndex,
-	endRowIndex,
+	selectedRowsLength,
 	startColumnIndex,
 	endColumnIndex,
 }: GetRowSelectionLengthParams): number => {
-	if (rowIndex < startRowIndex || rowIndex > endRowIndex) throw Error('Row index is out of range');
+	if (rowIndex < 0 || rowIndex > selectedRowsLength) throw Error('Row index is out of range');
 
+	// Only one row selected
+	if (selectedRowsLength === 1) return endColumnIndex - startColumnIndex;
 	// First row
-	if (rowIndex === startRowIndex) {
-		// Only one row selected
-		if (startRowIndex === endRowIndex) return endColumnIndex - startColumnIndex;
-
-		return rowText.length - startColumnIndex;
-	}
-
+	if (rowIndex === 0) return rowText.length - startColumnIndex;
 	// Last row
-	if (rowIndex === endRowIndex) return endColumnIndex;
+	if (rowIndex === selectedRowsLength - 1) return endColumnIndex;
 
 	// Middle row
 	return rowText.length;
+};
+
+const shouldMergeRows = ({ rows, selectedRowsLength, startColumnIndex, endColumnIndex }: ShouldMergeRowsParams) => {
+	if (rows.length < 2) return false;
+	if (rows[0].text.length === 0) return true;
+
+	const lastRowIsFullySelected =
+		getRowSelectionLength({
+			rowText: rows.at(-1)!.text,
+			rowIndex: rows.length - 1,
+			selectedRowsLength,
+			startColumnIndex,
+			endColumnIndex,
+		}) > 0;
+
+	return !lastRowIsFullySelected;
+};
+
+export const mergeRows = (
+	mainRow: RowWithSelectedInfo, // MainRow will be focused if focusRow is true
+	secondaryRow: RowWithSelectedInfo,
+	startColumnIndex: number,
+	endColumnIndex: number,
+): RowWithSelectedInfo => {
+	let text = `${mainRow.text.substring(0, startColumnIndex)}${secondaryRow.text.substring(
+		endColumnIndex,
+		secondaryRow.text.length,
+	)}`;
+
+	return {
+		...mainRow,
+		text,
+	};
 };

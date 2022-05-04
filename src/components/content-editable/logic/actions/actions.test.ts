@@ -1239,9 +1239,90 @@ describe('deleteSelectionAction', () => {
 		]);
 	});
 
-	it('should remove a row from downside', () => {});
+	it('should merge rows when deleting one row from downside', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 0;
+		const endRowIndex = 1;
+		const endColumnIndex = 0;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+			{
+				key: '2',
+				text: 'How are you?',
+				selected: false,
+			},
+		];
 
-	it('should remove two rows from downside', () => {});
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'How are you?',
+				selected: false,
+			},
+		]);
+	});
+
+	it('should merge rows when deleting two rows from downside', () => {
+		const startRowIndex = 1;
+		const startColumnIndex = 0;
+		const endRowIndex = 3;
+		const endColumnIndex = 0;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+			{
+				key: '2',
+				text: 'How are you?',
+				selected: false,
+			},
+			{
+				key: '3',
+				text: "I'm very fine",
+				selected: false,
+			},
+			{
+				key: '4',
+				text: 'And you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+			{
+				key: '2',
+				text: 'And you?',
+				selected: false,
+			},
+		]);
+	});
 
 	it('should delete all text from a row and remove next row', () => {});
 

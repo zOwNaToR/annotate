@@ -53,8 +53,14 @@ export type DeleteSelectionActionParams = BaseAction & {
 export type GetRowSelectionLengthParams = {
 	rowText: string;
 	rowIndex: number;
-	startRowIndex: number;
-	endRowIndex: number;
+	selectedRowsLength: number;
+	startColumnIndex: number;
+	endColumnIndex: number;
+};
+
+export type ShouldMergeRowsParams = {
+	rows: RowWithSelectedInfo[];
+	selectedRowsLength: number;
 	startColumnIndex: number;
 	endColumnIndex: number;
 };
