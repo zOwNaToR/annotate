@@ -138,9 +138,9 @@ export const deleteSelectionAction = ({
 		return currentRows;
 	}
 
-	const rowsToUpdate = currentRows.slice(startRowIndex, endRowIndex + 1);
+	const rowsToUpdate = currentRows.splice(startRowIndex, endRowIndex + 1);
 
-	return rowsToUpdate.reduce<RowWithSelectedInfo[]>((acc, curr, i, array) => {
+	const updatedRows = rowsToUpdate.reduce<RowWithSelectedInfo[]>((acc, curr, i, array) => {
 		const isFirstRow = i === 0;
 		const isLastRow = i === array.length - 1;
 		const isFullySelected =
@@ -162,6 +162,10 @@ export const deleteSelectionAction = ({
 
 		return acc;
 	}, []);
+
+	currentRows.splice(startRowIndex, 0, ...updatedRows);
+
+	return currentRows;
 };
 
 const shouldDeleteRow = (isFirstRow: boolean, isLastRow: boolean, isFullySelected: boolean): boolean => {

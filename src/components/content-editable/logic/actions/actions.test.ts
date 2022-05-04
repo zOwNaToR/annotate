@@ -1154,7 +1154,7 @@ describe('deleteSelectionAction', () => {
 		]);
 	});
 
-	it('should delete a row', () => {
+	it('should remove a row from upside', () => {
 		const startRowIndex = 0;
 		const startColumnIndex = 2;
 		const endRowIndex = 1;
@@ -1188,4 +1188,62 @@ describe('deleteSelectionAction', () => {
 			},
 		]);
 	});
+
+	it('should remove two rows from upside', () => {
+		const startRowIndex = 0;
+		const startColumnIndex = 2;
+		const endRowIndex = 2;
+		const endColumnIndex = 8;
+		const currentRows: RowWithSelectedInfo[] = [
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+			{
+				key: '2',
+				text: 'How are you?',
+				selected: false,
+			},
+			{
+				key: '3',
+				text: "I'm fine",
+				selected: false,
+			},
+			{
+				key: '4',
+				text: 'And you?',
+				selected: false,
+			},
+		];
+
+		const newRows = deleteSelectionAction({
+			currentRows,
+			startRowIndex,
+			startColumnIndex,
+			endRowIndex,
+			endColumnIndex,
+		});
+
+		expect(newRows).toEqual([
+			{
+				key: '1',
+				text: 'Hi',
+				selected: false,
+			},
+			{
+				key: '4',
+				text: 'And you?',
+				selected: false,
+			},
+		]);
+	});
+
+	it('should remove a row from downside', () => {});
+
+	it('should remove two rows from downside', () => {});
+
+	it('should delete all text from a row and remove next row', () => {});
+
+	it('should delete all text from a row and remove previous row', () => {});
 });
