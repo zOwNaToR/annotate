@@ -1,7 +1,8 @@
+import { AnnotateNodes } from "../types";
 import { AnnotateSelection } from "./AnnotateSelection";
 
 export type EditorState = {
-   nodes: AnnotateNode[]
+   nodes: AnnotateNodes
    selection: AnnotateSelection
 }
 
