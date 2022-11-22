@@ -1,6 +1,6 @@
 import { EditorState } from '../../lib/editor-state/EditorState';
 import { getDefaultEditorState } from '../testUtils';
-import { WriteCommand } from './WriteCommand';
+import { WriteCommand } from '../../lib/commands/WriteCommand';
 
 type WriterSetupOptions = {
 	editorState: EditorState;

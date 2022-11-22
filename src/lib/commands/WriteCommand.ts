@@ -1,6 +1,6 @@
-import { BaseCommand } from '../../lib/commands/BaseCommand';
-import { WriteCommandParams } from '../../lib/commands/commandTypes';
-import { EditorState, EditorStateManager } from '../../lib/editor-state/EditorState';
+import { BaseCommand } from './BaseCommand';
+import { WriteCommandParams } from './commandTypes';
+import { EditorState, EditorStateManager } from '../editor-state/EditorState';
 
 export class WriteCommand extends BaseCommand {
 	public undoable: boolean = true;
