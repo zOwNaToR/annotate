@@ -165,6 +165,8 @@ export class EditorStateManager {
 	private isNodeSelected = (nodeIndex: number, anchorIndex: number, focusIndex: number) => {
 		if (nodeIndex === -1) return false;
 
+		if (this.getDirection() === 'reverse') return isBetween(nodeIndex, focusIndex, anchorIndex);
+
 		return isBetween(nodeIndex, anchorIndex, focusIndex);
 	};
 

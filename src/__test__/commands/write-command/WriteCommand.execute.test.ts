@@ -304,3 +304,59 @@ describe('range selection (text in one line selected) with reverse direction', (
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
 	});
 });
+
+describe('range selection (text in multiple lines selected) with reverse direction', () => {
+	it('should delete some text of first and third line, delete second line, add text in its place and merge first and third lines', () => {
+		const { editorState } = setup();
+		const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+		editorState.selection.set({
+			anchor: { key: 'third', offset: 3 },
+			focus: { key: 'first', offset: 6 },
+		});
+
+		const executed = writeCommand.execute();
+
+		const nodesArray = [...editorState.nodes];
+		expect(executed).toBe(true);
+		expect(editorState.nodes.size).toBe(3);
+		expect(nodesArray[0][1].text).toBe('Lorem Z bye');
+		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
+		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
+	});
+
+	it('should delete first line and some text of second line', () => {
+		const { editorState } = setup();
+		const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+		editorState.selection.set({
+			anchor: { key: 'second', offset: 5 },
+			focus: { key: 'first', offset: 0 },
+		});
+
+		const executed = writeCommand.execute();
+
+		const nodesArray = [...editorState.nodes];
+		expect(executed).toBe(true);
+		expect(editorState.nodes.size).toBe(4);
+		expect(nodesArray[0][1].text).toBe('Z sit');
+		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 1 });
+		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 1 });
+	});
+	
+	it('should delete third line and some text of second line', () => {
+		const { editorState } = setup();
+		const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+		editorState.selection.set({
+			anchor: { key: 'third', offset: 7 },
+			focus: { key: 'second', offset: 6 },
+		});
+
+		const executed = writeCommand.execute();
+
+		const nodesArray = [...editorState.nodes];
+		expect(executed).toBe(true);
+		expect(editorState.nodes.size).toBe(4);
+		expect(nodesArray[1][1].text).toBe('dolor Z');
+		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 7 });
+		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
+	});
+});
