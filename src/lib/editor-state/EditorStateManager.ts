@@ -1,12 +1,6 @@
-import { AnnotateNodes, AnnotateNodeWithSelectionInfo } from '../types';
+import { AnnotateNodeWithSelectionInfo } from '../types';
 import { isBetween, replaceText } from '../utils';
-import { AnnotateSelection } from './AnnotateSelection';
-import { Direction } from './EditorState.types';
-
-export type EditorState = {
-	nodes: AnnotateNodes;
-	selection: AnnotateSelection;
-};
+import { Direction, EditorState } from './types';
 
 export class EditorStateManager {
 	public state: EditorState;

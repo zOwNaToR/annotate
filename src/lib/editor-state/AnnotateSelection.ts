@@ -1,4 +1,4 @@
-import { SelectionElement, SelectionType, SetSelectionOptions } from './EditorState.types';
+import { SelectionElement, SelectionType, SetSelectionOptions } from './types';
 
 export class AnnotateSelection {
 	public anchor: SelectionElement | null = null;

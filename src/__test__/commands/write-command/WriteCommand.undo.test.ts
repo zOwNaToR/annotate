@@ -1,4 +1,4 @@
-import { EditorState } from '../../../lib/editor-state/EditorState';
+import { EditorState } from '../../../lib/editor-state/EditorStateManager';
 import { getDefaultEditorState } from '../../testUtils';
 import { WriteCommand } from '../../../lib/commands/WriteCommand';
 

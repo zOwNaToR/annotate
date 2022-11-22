@@ -1,6 +1,6 @@
-import { EditorState } from '../../../lib/editor-state/EditorState';
 import { getDefaultEditorState } from '../../testUtils';
 import { WriteCommand } from '../../../lib/commands/WriteCommand';
+import { EditorState } from '../../../lib/editor-state/types';
 
 type WriterSetupOptions = {
 	editorState: EditorState;
@@ -341,7 +341,7 @@ describe('range selection (text in multiple lines selected) with reverse directi
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 1 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 1 });
 	});
-	
+
 	it('should delete third line and some text of second line', () => {
 		const { editorState } = setup();
 		const writeCommand = new WriteCommand(editorState, { text: 'Z' });
