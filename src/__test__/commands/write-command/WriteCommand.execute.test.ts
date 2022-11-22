@@ -269,4 +269,38 @@ describe('range selection (text in one line selected) with reverse direction', (
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
 	});
+
+	it('should delete text selection and add text in its place multiple times', () => {
+		const { editorState } = setup();
+		const writeCommand = new WriteCommand(editorState, { text: '-' });
+		const writeCommand2 = new WriteCommand(editorState, { text: 'Y' });
+		const writeCommand3 = new WriteCommand(editorState, { text: 'e' });
+		const writeCommand4 = new WriteCommand(editorState, { text: 's' });
+		const writeCommand5 = new WriteCommand(editorState, { text: '-' });
+		editorState.selection.set({
+			anchor: { key: 'first', offset: 11 },
+			focus: { key: 'first', offset: 5 },
+		});
+
+		const executed = writeCommand.execute();
+		const executed2 = writeCommand2.execute();
+		const executed3 = writeCommand3.execute();
+		editorState.selection.set({
+			anchor: { key: 'second', offset: 9 },
+			focus: { key: 'second', offset: 5 },
+		});
+		const executed4 = writeCommand4.execute();
+		const executed5 = writeCommand5.execute();
+
+		const nodesArray = [...editorState.nodes];
+		expect(executed).toBe(true);
+		expect(executed2).toBe(true);
+		expect(executed3).toBe(true);
+		expect(executed4).toBe(true);
+		expect(executed5).toBe(true);
+		expect(nodesArray[0][1].text).toBe('Lorem-Ye');
+		expect(nodesArray[1][1].text).toBe('dolors-');
+		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 7 });
+		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
+	});
 });
