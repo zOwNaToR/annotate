@@ -16,25 +16,29 @@ export class WriteCommand extends BaseCommand {
 	}
 
 	public execute(): boolean {
-		const { nodeKey, text } = this.params;
-		const anchorOffset = this.editorState.selection.anchor?.offset
-		const focusOffset = this.editorState.selection.focus?.offset
+		if (!this.editorState.selection.isSet()) return false;
 
-		const node = this.editorState.nodes.get(nodeKey);
-		if (!node || !this.editorState.selection.isSet()) return false;
+		const { text } = this.params;
+		const anchor = this.editorState.selection.anchor!;
+		const focus = this.editorState.selection.focus!;
 
-		const startOffset = Math.min(anchorOffset ?? 0, focusOffset ?? 0)
-		const endOffset = Math.max(anchorOffset ?? 0, focusOffset ?? 0)
+		const anchorNode = this.editorState.nodes.get(anchor.key);
+		if (!anchorNode) return false;
 
-		node.text = replaceText(node.text ?? '', startOffset, endOffset, text);
+		const startOffset = Math.min(anchor.offset ?? 0, focus.offset ?? 0);
+		const endOffset = Math.max(anchor.offset ?? 0, focus.offset ?? 0);
+
+		console.log('ciao', anchorNode.text, startOffset, endOffset, text)
+		anchorNode.text = replaceText(anchorNode.text ?? '', startOffset, endOffset, text);
+		console.log('ciao2', anchorNode.text, startOffset, endOffset, text)
 
 		this.editorState.selection.set({
 			anchor: {
-				key: nodeKey,
+				key: anchor.key,
 				offset: startOffset + text.length,
 			},
 			focus: {
-				key: nodeKey,
+				key: anchor.key,
 				offset: startOffset + text.length,
 			},
 		});

@@ -18,16 +18,26 @@ const setup = (options: WriterSetupOptions = getDefaultWriteOptions()) => {
 
 describe('execute method', () => {
 	describe('nothing selected', () => {
+		it('should do nothing when there is no selection', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+
+			const executed = writeCommand.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(false);
+			expect(nodesArray[0][1].text).toBe('Lorem ipsum');
+			expect(editorState.selection.anchor).toEqual(null);
+			expect(editorState.selection.focus).toEqual(null);
+		});
+
 		it('should add text at the begging of first line', () => {
 			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'Z',
-			});
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 			editorState.selection.set({
 				anchor: { key: 'first', offset: 0 },
 				focus: { key: 'first', offset: 0 },
-			})
+			});
 
 			const executed = writeCommand.execute();
 
@@ -40,14 +50,11 @@ describe('execute method', () => {
 
 		it('should add text in middle of second line', () => {
 			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, {
-				nodeKey: 'second',
-				text: 'Z',
-			});
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 			editorState.selection.set({
-				anchor: { key: 'first', offset: 5 },
-				focus: { key: 'first', offset: 5 },
-			})
+				anchor: { key: 'second', offset: 5 },
+				focus: { key: 'second', offset: 5 },
+			});
 
 			const executed = writeCommand.execute();
 
@@ -60,14 +67,11 @@ describe('execute method', () => {
 
 		it('should add text at the end of first line', () => {
 			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'Z',
-			});
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 			editorState.selection.set({
 				anchor: { key: 'first', offset: 11 },
 				focus: { key: 'first', offset: 11 },
-			})
+			});
 
 			const executed = writeCommand.execute();
 
@@ -80,26 +84,14 @@ describe('execute method', () => {
 
 		it('should add text multiple times', () => {
 			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: ' ',
-			});
-			const writeCommand2 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'Y',
-			});
-			const writeCommand3 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'e',
-			});
-			const writeCommand4 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 's',
-			});
+			const writeCommand = new WriteCommand(editorState, { text: ' ' });
+			const writeCommand2 = new WriteCommand(editorState, { text: 'Y' });
+			const writeCommand3 = new WriteCommand(editorState, { text: 'e' });
+			const writeCommand4 = new WriteCommand(editorState, { text: 's' });
 			editorState.selection.set({
 				anchor: { key: 'first', offset: 11 },
 				focus: { key: 'first', offset: 11 },
-			})
+			});
 
 			const executed = writeCommand.execute();
 			const executed2 = writeCommand2.execute();
@@ -120,14 +112,11 @@ describe('execute method', () => {
 	describe('text in one line selected', () => {
 		it('should delete text selection and add text in its place', () => {
 			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'Z',
-			});
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 			editorState.selection.set({
 				anchor: { key: 'first', offset: 6 },
 				focus: { key: 'first', offset: 11 },
-			})
+			});
 
 			const executed = writeCommand.execute();
 
@@ -140,30 +129,15 @@ describe('execute method', () => {
 
 		it('should delete text selection and add text in its place multiple times', () => {
 			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: ' ',
-			});
-			const writeCommand2 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'Y',
-			});
-			const writeCommand3 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 'e',
-			});
-			const writeCommand4 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: 's',
-			});
-			const writeCommand5 = new WriteCommand(editorState, {
-				nodeKey: 'first',
-				text: '-',
-			});
+			const writeCommand = new WriteCommand(editorState, { text: ' ' });
+			const writeCommand2 = new WriteCommand(editorState, { text: 'Y' });
+			const writeCommand3 = new WriteCommand(editorState, { text: 'e' });
+			const writeCommand4 = new WriteCommand(editorState, { text: 's' });
+			const writeCommand5 = new WriteCommand(editorState, { text: '-' });
 			editorState.selection.set({
 				anchor: { key: 'first', offset: 3 },
 				focus: { key: 'first', offset: 8 },
-			})
+			});
 
 			const executed = writeCommand.execute();
 			const executed2 = writeCommand2.execute();
@@ -171,7 +145,7 @@ describe('execute method', () => {
 			editorState.selection.set({
 				anchor: { key: 'first', offset: 6 },
 				focus: { key: 'first', offset: 9 },
-			})
+			});
 			const executed4 = writeCommand4.execute();
 			const executed5 = writeCommand5.execute();
 
