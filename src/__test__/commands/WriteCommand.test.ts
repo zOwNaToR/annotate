@@ -17,20 +17,20 @@ const setup = (options: WriterSetupOptions = getDefaultWriteOptions()) => {
 };
 
 describe('execute method', () => {
-	describe('nothing selected', () => {
-		it('should do nothing when there is no selection', () => {
-			const { editorState } = setup();
-			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+	it('should do nothing when there is no selection', () => {
+		const { editorState } = setup();
+		const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 
-			const executed = writeCommand.execute();
+		const executed = writeCommand.execute();
 
-			const nodesArray = [...editorState.nodes];
-			expect(executed).toBe(false);
-			expect(nodesArray[0][1].text).toBe('Lorem ipsum');
-			expect(editorState.selection.anchor).toEqual(null);
-			expect(editorState.selection.focus).toEqual(null);
-		});
+		const nodesArray = [...editorState.nodes];
+		expect(executed).toBe(false);
+		expect(nodesArray[0][1].text).toBe('Lorem ipsum');
+		expect(editorState.selection.anchor).toEqual(null);
+		expect(editorState.selection.focus).toEqual(null);
+	});
 
+	describe('caret selection', () => {
 		it('should add text at the begging of first line', () => {
 			const { editorState } = setup();
 			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
@@ -109,7 +109,7 @@ describe('execute method', () => {
 		});
 	});
 
-	describe('text in one line selected', () => {
+	describe('range selection (text in one line selected)', () => {
 		it('should delete text selection and add text in its place', () => {
 			const { editorState } = setup();
 			const writeCommand = new WriteCommand(editorState, { text: 'Z' });

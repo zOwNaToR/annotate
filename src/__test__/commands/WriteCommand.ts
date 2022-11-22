@@ -28,9 +28,7 @@ export class WriteCommand extends BaseCommand {
 		const startOffset = Math.min(anchor.offset ?? 0, focus.offset ?? 0);
 		const endOffset = Math.max(anchor.offset ?? 0, focus.offset ?? 0);
 
-		console.log('ciao', anchorNode.text, startOffset, endOffset, text)
 		anchorNode.text = replaceText(anchorNode.text ?? '', startOffset, endOffset, text);
-		console.log('ciao2', anchorNode.text, startOffset, endOffset, text)
 
 		this.editorState.selection.set({
 			anchor: {
