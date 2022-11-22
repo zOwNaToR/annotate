@@ -11,7 +11,7 @@ export class AnnotateSelection {
 		if (options) this.set(options);
 	}
 
-	set({ anchor, focus }: SetSelectionOptions) {
+	public set({ anchor, focus }: SetSelectionOptions) {
 		this.type = anchor.key === focus.key && anchor.offset === focus.offset ? 'Caret' : 'Range';
 
 		this.anchor = {
@@ -24,7 +24,7 @@ export class AnnotateSelection {
 		};
 	}
 
-	isSet = (): boolean =>
+	public isSet = (): boolean =>
 		!!this.anchor &&
 		!!this.focus &&
 		typeof this.anchor.offset !== 'undefined' &&

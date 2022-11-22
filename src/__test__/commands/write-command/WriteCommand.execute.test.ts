@@ -251,3 +251,22 @@ describe('range selection (text in multiple lines selected)', () => {
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
 	});
 });
+
+describe('range selection (text in one line selected) with reverse direction', () => {
+	it('should delete text selection and add text in its place', () => {
+		const { editorState } = setup();
+		const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+		editorState.selection.set({
+			anchor: { key: 'first', offset: 11 },
+			focus: { key: 'first', offset: 6 },
+		});
+
+		const executed = writeCommand.execute();
+
+		const nodesArray = [...editorState.nodes];
+		expect(executed).toBe(true);
+		expect(nodesArray[0][1].text).toBe('Lorem Z');
+		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
+		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
+	});
+});

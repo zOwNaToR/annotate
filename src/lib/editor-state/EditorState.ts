@@ -1,6 +1,7 @@
 import { AnnotateNodes, AnnotateNodeWithSelectionInfo } from '../types';
 import { isBetween, replaceText } from '../utils';
 import { AnnotateSelection } from './AnnotateSelection';
+import { Direction } from './EditorState.types';
 
 export type EditorState = {
 	nodes: AnnotateNodes;
@@ -77,9 +78,9 @@ export class EditorStateManager {
 			this.mergeNodes(startNode.key, endNode.key);
 		}
 
-		const newSelection = shouldDeleteFirstNode ? endNode : startNode
+		const newSelection = shouldDeleteFirstNode ? endNode : startNode;
 
-      this.state.selection.set({
+		this.state.selection.set({
 			anchor: {
 				key: newSelection.key,
 				offset: newSelection.offsetStart!,
@@ -91,6 +92,22 @@ export class EditorStateManager {
 		});
 
 		return true;
+	};
+
+	private getDirection = (): Direction => {
+		if (!this.state.selection.isSet()) return 'normal';
+
+		const { anchor, focus } = this.state.selection;
+
+		const anchorIndex = this.findNodeIndex(anchor!.key);
+		const focusIndex = this.findNodeIndex(focus!.key);
+
+		const isFocusBeforeAnchor =
+			focusIndex < anchorIndex || (anchorIndex === focusIndex && focus!.offset < anchor!.offset);
+
+		if (isFocusBeforeAnchor) return 'reverse';
+
+		return 'normal';
 	};
 
 	private mergeNodes = (startNodeKey: string, endNodeKey: string) => {
@@ -120,8 +137,11 @@ export class EditorStateManager {
 	private getNodesSelectionInfo = (): AnnotateNodeWithSelectionInfo[] => {
 		if (!this.state.selection.isSet()) return [];
 
-		const startElement = this.state.selection.anchor!;
-		const endElement = this.state.selection.focus!;
+		const direction = this.getDirection();
+		const startElement =
+			direction === 'normal' ? this.state.selection.anchor! : this.state.selection.focus!;
+		const endElement =
+			direction === 'normal' ? this.state.selection.focus! : this.state.selection.anchor!;
 
 		const anchorIndex = this.findNodeIndex(this.state.selection.anchor!.key);
 		const focusIndex = this.findNodeIndex(this.state.selection.focus!.key);
