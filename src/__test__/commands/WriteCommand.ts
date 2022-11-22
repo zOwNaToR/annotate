@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../lib/commands/BaseCommand';
 import { WriteCommandParams } from '../../lib/commands/commandTypes';
 import { EditorState } from '../../lib/editor-state/EditorState';
-import { addTextAtIndex } from '../../lib/utils';
+import { addTextAtIndex, isUndefined, replaceText } from '../../lib/utils';
 
 export class WriteCommand extends BaseCommand {
 	public undoable: boolean = true;
@@ -16,21 +16,26 @@ export class WriteCommand extends BaseCommand {
 	}
 
 	public execute(): boolean {
-		const { nodeKey, nodeOffset, text } = this.params;
+		const { nodeKey, text } = this.params;
+		const anchorOffset = this.editorState.selection.anchor?.offset
+		const focusOffset = this.editorState.selection.focus?.offset
 
 		const node = this.editorState.nodes.get(nodeKey);
-		if (!node) return false;
+		if (!node || !this.editorState.selection.isSet()) return false;
 
-		node.text = addTextAtIndex(node.text ?? '', nodeOffset, text);
+		const startOffset = Math.min(anchorOffset ?? 0, focusOffset ?? 0)
+		const endOffset = Math.max(anchorOffset ?? 0, focusOffset ?? 0)
+
+		node.text = replaceText(node.text ?? '', startOffset, endOffset, text);
 
 		this.editorState.selection.set({
 			anchor: {
 				key: nodeKey,
-				offset: nodeOffset + text.length,
+				offset: startOffset + text.length,
 			},
 			focus: {
 				key: nodeKey,
-				offset: nodeOffset + text.length,
+				offset: startOffset + text.length,
 			},
 		});
 
