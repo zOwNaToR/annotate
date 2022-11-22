@@ -77,6 +77,44 @@ describe('execute method', () => {
 			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 12 });
 			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 12 });
 		});
+
+		it('should add text multiple times', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: ' ',
+			});
+			const writeCommand2 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: 'Y',
+			});
+			const writeCommand3 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: 'e',
+			});
+			const writeCommand4 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: 's',
+			});
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 11 },
+				focus: { key: 'first', offset: 11 },
+			})
+
+			const executed = writeCommand.execute();
+			const executed2 = writeCommand2.execute();
+			const executed3 = writeCommand3.execute();
+			const executed4 = writeCommand4.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(executed2).toBe(true);
+			expect(executed3).toBe(true);
+			expect(executed4).toBe(true);
+			expect(nodesArray[0][1].text).toBe('Lorem ipsum Yes');
+			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 15 });
+			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 15 });
+		});
 	});
 
 	describe('text in one line selected', () => {
@@ -98,6 +136,54 @@ describe('execute method', () => {
 			expect(nodesArray[0][1].text).toBe('Lorem Z');
 			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
 			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
+		});
+
+		it('should delete text selection and add text in its place multiple times', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: ' ',
+			});
+			const writeCommand2 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: 'Y',
+			});
+			const writeCommand3 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: 'e',
+			});
+			const writeCommand4 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: 's',
+			});
+			const writeCommand5 = new WriteCommand(editorState, {
+				nodeKey: 'first',
+				text: '-',
+			});
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 3 },
+				focus: { key: 'first', offset: 8 },
+			})
+
+			const executed = writeCommand.execute();
+			const executed2 = writeCommand2.execute();
+			const executed3 = writeCommand3.execute();
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 6 },
+				focus: { key: 'first', offset: 9 },
+			})
+			const executed4 = writeCommand4.execute();
+			const executed5 = writeCommand5.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(executed2).toBe(true);
+			expect(executed3).toBe(true);
+			expect(executed4).toBe(true);
+			expect(executed5).toBe(true);
+			expect(nodesArray[0][1].text).toBe('Lor Yes-');
+			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 8 });
+			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 8 });
 		});
 	});
 });

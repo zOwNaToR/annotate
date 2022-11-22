@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../lib/commands/BaseCommand';
 import { WriteCommandParams } from '../../lib/commands/commandTypes';
 import { EditorState } from '../../lib/editor-state/EditorState';
-import { addTextAtIndex, isUndefined, replaceText } from '../../lib/utils';
+import { replaceText } from '../../lib/utils';
 
 export class WriteCommand extends BaseCommand {
 	public undoable: boolean = true;
