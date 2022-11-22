@@ -160,4 +160,24 @@ describe('execute method', () => {
 			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 8 });
 		});
 	});
+
+	describe('range selection (text in multiple lines selected)', () => {
+		it('should delete text selection, add text in its place and merge first and last lines', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 10 },
+				focus: { key: 'second', offset: 1 },
+			});
+
+			const executed = writeCommand.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(editorState.nodes.size).toBe(4);
+			expect(nodesArray[0][1].text).toBe('Lorem ipsuZolor sit');
+			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 11 });
+			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 11 });
+		});
+	});
 });
