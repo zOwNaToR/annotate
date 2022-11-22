@@ -77,14 +77,16 @@ export class EditorStateManager {
 			this.mergeNodes(startNode.key, endNode.key);
 		}
 
+		const newSelection = shouldDeleteFirstNode ? endNode : startNode
+
       this.state.selection.set({
 			anchor: {
-				key: startNode.key,
-				offset: startNode.offsetStart!,
+				key: newSelection.key,
+				offset: newSelection.offsetStart!,
 			},
 			focus: {
-				key: startNode.key,
-				offset: startNode.offsetStart!,
+				key: newSelection.key,
+				offset: newSelection.offsetStart!,
 			},
 		});
 

@@ -162,7 +162,7 @@ describe('execute method', () => {
 	});
 
 	describe('range selection (text in multiple lines selected)', () => {
-		it('should delete text selection, add text in its place and merge first and last lines', () => {
+		it('should delete some text of first and second line, add text in its place and merge lines', () => {
 			const { editorState } = setup();
 			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 			editorState.selection.set({
@@ -179,5 +179,77 @@ describe('execute method', () => {
 			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 11 });
 			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 11 });
 		});
+
+		it('should delete some text of first and third line, delete second line, add text in its place and merge first and third lines', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 6 },
+				focus: { key: 'third', offset: 3 },
+			});
+
+			const executed = writeCommand.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(editorState.nodes.size).toBe(3);
+			expect(nodesArray[0][1].text).toBe('Lorem Z bye');
+			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
+			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
+		});
+
+		it('should delete everything and keep only first line with inserted text', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 0 },
+				focus: { key: 'fifth', offset: 15 },
+			});
+
+			const executed = writeCommand.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(editorState.nodes.size).toBe(1);
+			expect(nodesArray[0][1].text).toBe('Z');
+			expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 1 });
+			expect(editorState.selection.focus).toEqual({ key: 'first', offset: 1 });
+		});
+
+		it('should delete first line and some text of second line', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+			editorState.selection.set({
+				anchor: { key: 'first', offset: 0 },
+				focus: { key: 'second', offset: 5 },
+			});
+
+			const executed = writeCommand.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(editorState.nodes.size).toBe(4);
+			expect(nodesArray[0][1].text).toBe('Z sit');
+			expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 1 });
+			expect(editorState.selection.focus).toEqual({ key: 'second', offset: 1 });
+		}); 
+
+		it('should delete third line and some text of second line', () => {
+			const { editorState } = setup();
+			const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+			editorState.selection.set({
+				anchor: { key: 'second', offset: 6 },
+				focus: { key: 'third', offset: 7 },
+			});
+
+			const executed = writeCommand.execute();
+
+			const nodesArray = [...editorState.nodes];
+			expect(executed).toBe(true);
+			expect(editorState.nodes.size).toBe(4);
+			expect(nodesArray[1][1].text).toBe('dolor Z');
+			expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 7 });
+			expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
+		}); 
 	});
 });
