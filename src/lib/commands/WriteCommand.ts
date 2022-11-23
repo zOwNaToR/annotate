@@ -24,10 +24,6 @@ export class WriteCommand extends BaseCommand {
 	}
 
 	public undo(): boolean {
-		try {
-			return true;
-		} catch {
-			return false;
-		}
+		return false
 	}
 }
