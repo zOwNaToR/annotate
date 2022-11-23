@@ -27,3 +27,22 @@ it('should do nothing when there is no selection', () => {
 	expect(editorState.selection.anchor).toEqual(null);
 	expect(editorState.selection.focus).toEqual(null);
 });
+
+it('should delete previously inserted text', () => {
+	const { editorState } = setup();
+	const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+	editorState.selection.set({
+		anchor: { key: 'first', offset: 0 },
+		focus: { key: 'first', offset: 0 },
+	});
+
+	writeCommand.execute();
+	const executed = writeCommand.undo();
+
+	const nodesArray = [...editorState.nodes];
+	expect(executed).toBe(true);
+	expect(nodesArray[0][1].text).toBe('Lorem ipsum');
+	expect(writeCommand.undoed).toBe(true);
+	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 1 });
+	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 1 });
+});

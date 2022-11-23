@@ -1,6 +1,6 @@
 import { AnnotateNodeWithSelectionInfo } from '../types';
 import { isBetween, replaceText } from '../utils';
-import { Direction, EditorState } from './types';
+import { Direction, EditorState, WriteBackup } from './types';
 
 export class EditorStateManager {
 	public state: EditorState;
@@ -9,14 +9,14 @@ export class EditorStateManager {
 		this.state = state;
 	}
 
-	public write = (text: string): boolean => {
+	public write = (text: string): WriteBackup | null => {
 		const anchor = this.state.selection.anchor;
 		const focus = this.state.selection.focus;
 
-		if (!anchor || !focus) return false;
+		if (!anchor || !focus) return null;
 
 		const anchorNode = this.state.nodes.get(anchor.key);
-		if (!anchorNode) return false;
+		if (!anchorNode) return null;
 
 		const startOffset = Math.min(anchor.offset ?? 0, focus.offset ?? 0);
 		const endOffset = Math.max(anchor.offset ?? 0, focus.offset ?? 0);
@@ -34,7 +34,11 @@ export class EditorStateManager {
 			},
 		});
 
-		return true;
+		return {
+			nodeKey: anchor.key,
+			offset: startOffset,
+			text,
+		};
 	};
 
 	public deleteSelectionRange = (): boolean => {
