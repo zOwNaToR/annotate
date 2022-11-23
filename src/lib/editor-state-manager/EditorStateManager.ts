@@ -125,11 +125,13 @@ export class EditorStateManager {
 
 	private deleteNode = (nodeKey: string) => this.state.nodes.delete(nodeKey);
 
-	private deleteNodeText = (nodeKey: string, from: number, to: number) => {
+	public deleteNodeText = (nodeKey: string, from: number, to: number): boolean => {
 		const node = this.state.nodes.get(nodeKey);
-		if (!node || !node.text) return;
+		if (!node || !node.text) return false;
 
 		node.text = replaceText(node.text, from, to, '');
+		
+		return true
 	};
 
 	private getNodesSelectionInfo = (): AnnotateNodeWithSelectionInfo[] => {

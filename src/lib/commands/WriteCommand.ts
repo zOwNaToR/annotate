@@ -1,13 +1,13 @@
-import { BaseCommand } from './BaseCommand';
-import { WriteCommandParams } from './commandTypes';
 import { EditorStateManager } from '../editor-state-manager/EditorStateManager';
 import { EditorState, WriteBackup } from '../editor-state-manager/types';
-import { replaceText } from '../utils';
+import { BaseCommand } from './BaseCommand';
+import { WriteCommandParams } from './commandTypes';
 
 export class WriteCommand extends BaseCommand {
 	public undoable: boolean = true;
-	public editorStateManager: EditorStateManager;
-	public params: WriteCommandParams;
+
+	private editorStateManager: EditorStateManager;
+	private params: WriteCommandParams;
 	private writeBackup: WriteBackup | null = null;
 
 	constructor(editorState: EditorState, params: WriteCommandParams) {
@@ -17,7 +17,7 @@ export class WriteCommand extends BaseCommand {
 		this.params = params;
 	}
 
-	public execute(): boolean {
+	public override execute(): boolean {
 		if (this.editorStateManager.state.selection.type === 'Range') {
 			this.editorStateManager.deleteSelectionRange();
 		}
@@ -27,21 +27,17 @@ export class WriteCommand extends BaseCommand {
 		return this.writeBackup != null;
 	}
 
-	public undo(): boolean {
+	public override undo(): boolean {
 		if (!this.writeBackup) return false;
 
-		const node = this.editorStateManager.state.nodes.get(this.writeBackup.nodeKey);
-		if (!node) return false;
-
-		node.text = replaceText(
-			node.text ?? '',
+		const result = this.editorStateManager.deleteNodeText(
+			this.writeBackup.nodeKey,
 			this.writeBackup.offset,
-			this.writeBackup.offset + this.writeBackup.text.length,
-			''
+			this.writeBackup.offset + this.writeBackup.text.length
 		);
 
-		this.undoed = true;
+		this.undoed = result;
 
-		return true;
+		return result;
 	}
 }
