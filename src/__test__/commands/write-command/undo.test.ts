@@ -39,10 +39,9 @@ it('should delete text inserted by execute and restore selection Caret', () => {
 	writeCommand.execute();
 	const executed = writeCommand.undo();
 
-	const nodesArray = [...editorState.nodes];
 	expect(executed).toBe(true);
-	expect(nodesArray[0].text).toBe('Lorem ipsum');
 	expect(writeCommand.undoed).toBe(true);
+	expect(editorState.nodes[0].text).toBe('Lorem ipsum');
 	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 0 });
 	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 0 });
 });
@@ -58,10 +57,9 @@ it('should delete text inserted by execute and restore selection Range', () => {
 	writeCommand.execute();
 	const executed = writeCommand.undo();
 
-	const nodesArray = [...editorState.nodes];
 	expect(executed).toBe(true);
-	expect(nodesArray[0].text).toBe('Lorem ipsum');
 	expect(writeCommand.undoed).toBe(true);
+	expect(editorState.nodes[0].text).toBe('Lorem ipsum');
 	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 6 });
 	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 11 });
 });
