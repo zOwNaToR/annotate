@@ -1,4 +1,4 @@
-import { AnnotateSelection } from '../editor-updater/AnnotateSelection';
+import { AnnotateSelection } from './AnnotateSelection';
 import { AnnotateNode, AnnotateNodeWithIndexInfo, AnnotateNodeWithSelectionInfo } from '../types';
 import { isBetween, replaceText } from '../utils';
 import { Direction } from './types';
