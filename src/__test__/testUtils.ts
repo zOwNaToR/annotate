@@ -1,5 +1,5 @@
 import { AnnotateSelection } from '../lib/editor-state-manager/AnnotateSelection';
-import { EditorState } from '../lib/editor-state-manager/types';
+import { EditorState } from '../lib/editor-state/EditorState';
 import { AnnotateNode } from '../lib/types';
 
 const getDefaultNodes = (): AnnotateNode[] => [
@@ -12,7 +12,5 @@ const getDefaultNodes = (): AnnotateNode[] => [
 
 const getDefaultSelection = () => new AnnotateSelection();
 
-export const getDefaultEditorState = (): EditorState => ({
-	nodes: getDefaultNodes(),
-	selection: getDefaultSelection(),
-});
+export const getDefaultEditorState = (): EditorState =>
+	new EditorState(getDefaultNodes(), getDefaultSelection());

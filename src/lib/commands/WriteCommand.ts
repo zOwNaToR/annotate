@@ -1,5 +1,6 @@
 import { EditorStateManager } from '../editor-state-manager/EditorStateManager';
-import { EditorState, WriteBackup } from '../editor-state-manager/types';
+import { WriteBackup } from '../editor-state-manager/types';
+import { EditorState } from '../editor-state/EditorState';
 import { BaseCommand } from './BaseCommand';
 import { WriteCommandParams } from './commandTypes';
 
@@ -18,7 +19,7 @@ export class WriteCommand extends BaseCommand {
 	}
 
 	public override execute(): boolean {
-		if (!this.editorStateManager.state.selection.isSet()) return false
+		if (!this.editorStateManager.state.selection.isSet()) return false;
 
 		this.backup = {
 			selectedNodes: this.editorStateManager.getSelectedNodes(),
@@ -38,9 +39,9 @@ export class WriteCommand extends BaseCommand {
 	public override undo(): boolean {
 		if (!this.undoable || !this.backup) return false;
 
-		this.editorStateManager.setSelection(this.backup.selection)
-		this.editorStateManager.replaceNodes(this.backup.selectedNodes)
-		
+		this.editorStateManager.setSelection(this.backup.selection);
+		this.editorStateManager.replaceNodes(this.backup.selectedNodes);
+
 		this.undoed = true;
 
 		return true;

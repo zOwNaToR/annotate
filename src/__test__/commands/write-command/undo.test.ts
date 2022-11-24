@@ -1,5 +1,5 @@
 import { WriteCommand } from '../../../lib/commands/WriteCommand';
-import { EditorState } from '../../../lib/editor-state-manager/types';
+import { EditorState } from '../../../lib/editor-state/EditorState';
 import { getDefaultEditorState } from '../../testUtils';
 
 type WriterSetupOptions = {

@@ -1,7 +1,4 @@
-import { AnnotateNode, AnnotateNodeWithIndexInfo } from '../types';
-import { AnnotateSelection } from './AnnotateSelection';
-
-export type Direction = 'normal' | 'reverse';
+import { AnnotateNodeWithIndexInfo } from '../types';
 
 export type SelectionType = 'Caret' | 'Range';
 
@@ -13,11 +10,6 @@ export type SelectionElement = {
 export type SetSelectionOptions = {
 	anchor: SelectionElement;
 	focus: SelectionElement;
-};
-
-export type EditorState = {
-	nodes: AnnotateNode[];
-	selection: AnnotateSelection;
 };
 
 export type WriteBackup = {
