@@ -28,7 +28,7 @@ it('should do nothing when there is no selection', () => {
 	expect(editorState.selection.focus).toEqual(null);
 });
 
-it('should delete previously inserted text', () => {
+it('should delete text inserted by execute and restore selection Caret', () => {
 	const { editorState } = setup();
 	const writeCommand = new WriteCommand(editorState, { text: 'Z' });
 	editorState.selection.set({
@@ -45,4 +45,23 @@ it('should delete previously inserted text', () => {
 	expect(writeCommand.undoed).toBe(true);
 	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 0 });
 	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 0 });
+});
+
+it('should delete text inserted by execute restore selection selection Range', () => {
+	const { editorState } = setup();
+	const writeCommand = new WriteCommand(editorState, { text: 'Z' });
+	editorState.selection.set({
+		anchor: { key: 'first', offset: 6 },
+		focus: { key: 'first', offset: 11 },
+	});
+
+	writeCommand.execute();
+	const executed = writeCommand.undo();
+
+	const nodesArray = [...editorState.nodes];
+	expect(executed).toBe(true);
+	expect(nodesArray[0].text).toBe('Lorem ipsum');
+	expect(writeCommand.undoed).toBe(true);
+	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 6 });
+	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 11 });
 });
