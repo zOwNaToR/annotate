@@ -2,8 +2,8 @@ import { EditorState } from '../editor-state/EditorState';
 import { AnnotateNodeWithIndexInfo } from '../types';
 import { replaceText } from '../utils';
 
-export class EditorStateManager {
-	public state: EditorState;
+export class EditorUpdater {
+	private state: EditorState;
 
 	constructor(state: EditorState) {
 		this.state = state;
@@ -25,30 +25,6 @@ export class EditorStateManager {
 			node.text = newNode.text;
 			node.type = newNode.type;
 		});
-	};
-
-	public getSelectedNodes = (): AnnotateNodeWithIndexInfo[] => {
-		if (!this.state.selection.isSet()) return [];
-
-		if (this.state.selection.type === 'Caret') {
-			const anchorKey = this.state.selection.anchor!.key;
-			const anchorNodeIndex = this.state.findNodeIndex(anchorKey);
-			const anchorNode = this.state.nodes[anchorNodeIndex];
-
-			if (!anchorNode) return [];
-
-			return [{ ...anchorNode, index: anchorNodeIndex }];
-		}
-
-		const anchorIndex = this.state.findNodeIndex(this.state.selection.anchor!.key);
-		const focusIndex = this.state.findNodeIndex(this.state.selection.focus!.key);
-
-		return this.state.nodes
-			.map((node, index) => ({
-				...node,
-				index,
-			}))
-			.filter((node) => this.state.isNodeSelected(node.index, anchorIndex, focusIndex));
 	};
 
 	public write = (text: string): boolean => {

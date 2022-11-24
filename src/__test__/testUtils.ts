@@ -1,4 +1,4 @@
-import { AnnotateSelection } from '../lib/editor-state-manager/AnnotateSelection';
+import { AnnotateSelection } from '../lib/editor-updater/AnnotateSelection';
 import { EditorState } from '../lib/editor-state/EditorState';
 import { AnnotateNode } from '../lib/types';
 

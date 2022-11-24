@@ -1,4 +1,4 @@
-import { AnnotateSelection } from '../lib/editor-state-manager/AnnotateSelection';
+import { AnnotateSelection } from '../lib/editor-updater/AnnotateSelection';
 
 describe('set method should set Caret type', () => {
 	it('sets the Caret at the beginning of first item', () => {

@@ -1,5 +1,5 @@
-import { AnnotateSelection } from '../editor-state-manager/AnnotateSelection';
-import { AnnotateNode, AnnotateNodeWithSelectionInfo } from '../types';
+import { AnnotateSelection } from '../editor-updater/AnnotateSelection';
+import { AnnotateNode, AnnotateNodeWithIndexInfo, AnnotateNodeWithSelectionInfo } from '../types';
 import { isBetween, replaceText } from '../utils';
 import { Direction } from './types';
 
@@ -97,5 +97,29 @@ export class EditorState {
 		node.text = replaceText(node.text, from, to, '');
 
 		return true;
+	};
+
+	public getSelectedNodes = (): AnnotateNodeWithIndexInfo[] => {
+		if (!this.selection.isSet()) return [];
+
+		if (this.selection.type === 'Caret') {
+			const anchorKey = this.selection.anchor!.key;
+			const anchorNodeIndex = this.findNodeIndex(anchorKey);
+			const anchorNode = this.nodes[anchorNodeIndex];
+
+			if (!anchorNode) return [];
+
+			return [{ ...anchorNode, index: anchorNodeIndex }];
+		}
+
+		const anchorIndex = this.findNodeIndex(this.selection.anchor!.key);
+		const focusIndex = this.findNodeIndex(this.selection.focus!.key);
+
+		return this.nodes
+			.map((node, index) => ({
+				...node,
+				index,
+			}))
+			.filter((node) => this.isNodeSelected(node.index, anchorIndex, focusIndex));
 	};
 }
