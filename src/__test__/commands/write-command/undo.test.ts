@@ -41,7 +41,7 @@ it('should delete previously inserted text', () => {
 
 	const nodesArray = [...editorState.nodes];
 	expect(executed).toBe(true);
-	expect(nodesArray[0][1].text).toBe('Lorem ipsum');
+	expect(nodesArray[0].text).toBe('Lorem ipsum');
 	expect(writeCommand.undoed).toBe(true);
 	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 1 });
 	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 1 });

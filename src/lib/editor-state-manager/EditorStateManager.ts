@@ -15,7 +15,7 @@ export class EditorStateManager {
 
 		if (!anchor || !focus) return null;
 
-		const anchorNode = this.state.nodes.get(anchor.key);
+		const anchorNode = this.findNode(anchor.key);
 		if (!anchorNode) return null;
 
 		const startOffset = Math.min(anchor.offset ?? 0, focus.offset ?? 0);
@@ -109,8 +109,8 @@ export class EditorStateManager {
 	};
 
 	private mergeNodes = (startNodeKey: string, endNodeKey: string) => {
-		const startNode = this.state.nodes.get(startNodeKey);
-		const endNode = this.state.nodes.get(endNodeKey);
+		const startNode = this.findNode(startNodeKey);
+		const endNode = this.findNode(endNodeKey);
 
 		if (!startNode || !endNode) return;
 
@@ -123,15 +123,18 @@ export class EditorStateManager {
 		this.deleteNode(endNodeKey);
 	};
 
-	private deleteNode = (nodeKey: string) => this.state.nodes.delete(nodeKey);
+	private deleteNode = (nodeKey: string) => {
+		const index = this.findNodeIndex(nodeKey);
+		this.state.nodes.splice(index, 1);
+	};
 
 	public deleteNodeText = (nodeKey: string, from: number, to: number): boolean => {
-		const node = this.state.nodes.get(nodeKey);
+		const node = this.findNode(nodeKey);
 		if (!node || !node.text) return false;
 
 		node.text = replaceText(node.text, from, to, '');
-		
-		return true
+
+		return true;
 	};
 
 	private getNodesSelectionInfo = (): AnnotateNodeWithSelectionInfo[] => {
@@ -146,13 +149,12 @@ export class EditorStateManager {
 		const anchorIndex = this.findNodeIndex(this.state.selection.anchor!.key);
 		const focusIndex = this.findNodeIndex(this.state.selection.focus!.key);
 
-		return [...this.state.nodes].map(([nodeKey, node], index) => {
-			const isFirstRow = startElement.key === nodeKey;
-			const isLastRow = endElement.key === nodeKey;
+		return this.state.nodes.map((node, index) => {
+			const isFirstRow = startElement.key === node.key;
+			const isLastRow = endElement.key === node.key;
 
 			return {
 				...node,
-				key: nodeKey,
 				isFirstRow,
 				isLastRow,
 				isSelected: this.isNodeSelected(index, anchorIndex, focusIndex),
@@ -170,8 +172,9 @@ export class EditorStateManager {
 		return isBetween(nodeIndex, anchorIndex, focusIndex);
 	};
 
-	private findNodeIndex = (key: string) =>
-		[...this.state.nodes.keys()].findIndex((k) => k === key);
+	private findNode = (key: string) => this.state.nodes.find((x) => x.key === key);
+
+	private findNodeIndex = (key: string) => this.state.nodes.findIndex((x) => x.key === key);
 
 	private canDeleteSelectionRange = (): boolean =>
 		this.state.selection.isSet() && this.state.selection.type === 'Range';

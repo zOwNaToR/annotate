@@ -1,15 +1,14 @@
 import { AnnotateSelection } from '../lib/editor-state-manager/AnnotateSelection';
 import { EditorState } from '../lib/editor-state-manager/types';
-import { AnnotateNode, AnnotateNodes } from '../lib/types';
+import { AnnotateNode } from '../lib/types';
 
-const getDefaultNodes = (): AnnotateNodes =>
-	new Map<string, AnnotateNode>([
-		['first', { text: 'Lorem ipsum', type: 'text' }],
-		['second', { text: 'dolor sit', type: 'text' }],
-		['third', { text: 'bye bye', type: 'text' }],
-		['fourth', { text: '', type: 'linebreak' }],
-		['fifth', { text: 'Hi how are you?', type: 'text' }],
-	]);
+const getDefaultNodes = (): AnnotateNode[] => [
+	{ key: 'first', text: 'Lorem ipsum', type: 'text' },
+	{ key: 'second', text: 'dolor sit', type: 'text' },
+	{ key: 'third', text: 'bye bye', type: 'text' },
+	{ key: 'fourth', text: '', type: 'linebreak' },
+	{ key: 'fifth', text: 'Hi how are you?', type: 'text' },
+];
 
 const getDefaultSelection = () => new AnnotateSelection();
 

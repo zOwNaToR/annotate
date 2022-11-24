@@ -1,4 +1,4 @@
-import { AnnotateNodes } from '../types';
+import { AnnotateNode } from '../types';
 import { AnnotateSelection } from './AnnotateSelection';
 
 export type Direction = 'normal' | 'reverse';
@@ -16,7 +16,7 @@ export type SetSelectionOptions = {
 };
 
 export type EditorState = {
-	nodes: AnnotateNodes;
+	nodes: AnnotateNode[];
 	selection: AnnotateSelection;
 };
 

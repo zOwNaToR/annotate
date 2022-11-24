@@ -24,7 +24,7 @@ it('should do nothing when there is no selection', () => {
 
 	const nodesArray = [...editorState.nodes];
 	expect(executed).toBe(false);
-	expect(nodesArray[0][1].text).toBe('Lorem ipsum');
+	expect(nodesArray[0].text).toBe('Lorem ipsum');
 	expect(editorState.selection.anchor).toEqual(null);
 	expect(editorState.selection.focus).toEqual(null);
 });
@@ -42,7 +42,7 @@ describe('caret selection', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(nodesArray[0][1].text).toBe('ZLorem ipsum');
+		expect(nodesArray[0].text).toBe('ZLorem ipsum');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 1 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 1 });
 	});
@@ -59,7 +59,7 @@ describe('caret selection', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(nodesArray[1][1].text).toBe('dolorZ sit');
+		expect(nodesArray[1].text).toBe('dolorZ sit');
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 6 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 6 });
 	});
@@ -76,7 +76,7 @@ describe('caret selection', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(nodesArray[0][1].text).toBe('Lorem ipsumZ');
+		expect(nodesArray[0].text).toBe('Lorem ipsumZ');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 12 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 12 });
 	});
@@ -102,7 +102,7 @@ describe('caret selection', () => {
 		expect(executed2).toBe(true);
 		expect(executed3).toBe(true);
 		expect(executed4).toBe(true);
-		expect(nodesArray[0][1].text).toBe('Lorem ipsum Yes');
+		expect(nodesArray[0].text).toBe('Lorem ipsum Yes');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 15 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 15 });
 	});
@@ -121,7 +121,7 @@ describe('range selection (text in one line selected)', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(nodesArray[0][1].text).toBe('Lorem Z');
+		expect(nodesArray[0].text).toBe('Lorem Z');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
 	});
@@ -154,7 +154,7 @@ describe('range selection (text in one line selected)', () => {
 		expect(executed3).toBe(true);
 		expect(executed4).toBe(true);
 		expect(executed5).toBe(true);
-		expect(nodesArray[0][1].text).toBe('Lor Yes-');
+		expect(nodesArray[0].text).toBe('Lor Yes-');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 8 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 8 });
 	});
@@ -173,8 +173,8 @@ describe('range selection (text in multiple lines selected)', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(4);
-		expect(nodesArray[0][1].text).toBe('Lorem ipsuZolor sit');
+		expect(editorState.nodes.length).toBe(4);
+		expect(nodesArray[0].text).toBe('Lorem ipsuZolor sit');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 11 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 11 });
 	});
@@ -191,8 +191,8 @@ describe('range selection (text in multiple lines selected)', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(3);
-		expect(nodesArray[0][1].text).toBe('Lorem Z bye');
+		expect(editorState.nodes.length).toBe(3);
+		expect(nodesArray[0].text).toBe('Lorem Z bye');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
 	});
@@ -209,8 +209,8 @@ describe('range selection (text in multiple lines selected)', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(1);
-		expect(nodesArray[0][1].text).toBe('Z');
+		expect(editorState.nodes.length).toBe(1);
+		expect(nodesArray[0].text).toBe('Z');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 1 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 1 });
 	});
@@ -227,8 +227,8 @@ describe('range selection (text in multiple lines selected)', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(4);
-		expect(nodesArray[0][1].text).toBe('Z sit');
+		expect(editorState.nodes.length).toBe(4);
+		expect(nodesArray[0].text).toBe('Z sit');
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 1 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 1 });
 	});
@@ -245,8 +245,8 @@ describe('range selection (text in multiple lines selected)', () => {
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(4);
-		expect(nodesArray[1][1].text).toBe('dolor Z');
+		expect(editorState.nodes.length).toBe(4);
+		expect(nodesArray[1].text).toBe('dolor Z');
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
 	});
@@ -265,7 +265,7 @@ describe('range selection (text in one line selected) with reverse direction', (
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(nodesArray[0][1].text).toBe('Lorem Z');
+		expect(nodesArray[0].text).toBe('Lorem Z');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
 	});
@@ -298,8 +298,8 @@ describe('range selection (text in one line selected) with reverse direction', (
 		expect(executed3).toBe(true);
 		expect(executed4).toBe(true);
 		expect(executed5).toBe(true);
-		expect(nodesArray[0][1].text).toBe('Lorem-Ye');
-		expect(nodesArray[1][1].text).toBe('dolors-');
+		expect(nodesArray[0].text).toBe('Lorem-Ye');
+		expect(nodesArray[1].text).toBe('dolors-');
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
 	});
@@ -318,8 +318,8 @@ describe('range selection (text in multiple lines selected) with reverse directi
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(3);
-		expect(nodesArray[0][1].text).toBe('Lorem Z bye');
+		expect(editorState.nodes.length).toBe(3);
+		expect(nodesArray[0].text).toBe('Lorem Z bye');
 		expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'first', offset: 7 });
 	});
@@ -336,8 +336,8 @@ describe('range selection (text in multiple lines selected) with reverse directi
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(4);
-		expect(nodesArray[0][1].text).toBe('Z sit');
+		expect(editorState.nodes.length).toBe(4);
+		expect(nodesArray[0].text).toBe('Z sit');
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 1 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 1 });
 	});
@@ -354,8 +354,8 @@ describe('range selection (text in multiple lines selected) with reverse directi
 
 		const nodesArray = [...editorState.nodes];
 		expect(executed).toBe(true);
-		expect(editorState.nodes.size).toBe(4);
-		expect(nodesArray[1][1].text).toBe('dolor Z');
+		expect(editorState.nodes.length).toBe(4);
+		expect(nodesArray[1].text).toBe('dolor Z');
 		expect(editorState.selection.anchor).toEqual({ key: 'second', offset: 7 });
 		expect(editorState.selection.focus).toEqual({ key: 'second', offset: 7 });
 	});
