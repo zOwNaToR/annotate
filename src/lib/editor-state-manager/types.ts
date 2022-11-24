@@ -1,4 +1,4 @@
-import { AnnotateNode } from '../types';
+import { AnnotateNode, AnnotateNodeWithIndexInfo } from '../types';
 import { AnnotateSelection } from './AnnotateSelection';
 
 export type Direction = 'normal' | 'reverse';
@@ -21,7 +21,6 @@ export type EditorState = {
 };
 
 export type WriteBackup = {
-	nodeKey: string;
-	text: string;
-	offset: number;
+	selectedNodes: AnnotateNodeWithIndexInfo[];
+	selection: SetSelectionOptions;
 };

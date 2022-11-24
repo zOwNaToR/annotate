@@ -8,7 +8,7 @@ export class WriteCommand extends BaseCommand {
 
 	private editorStateManager: EditorStateManager;
 	private params: WriteCommandParams;
-	private writeBackup: WriteBackup | null = null;
+	private backup: WriteBackup | null = null;
 
 	constructor(editorState: EditorState, params: WriteCommandParams) {
 		super();
@@ -18,26 +18,52 @@ export class WriteCommand extends BaseCommand {
 	}
 
 	public override execute(): boolean {
+		if (!this.editorStateManager.state.selection.isSet()) return false
+
+		this.backup = {
+			selectedNodes: this.editorStateManager.getSelectedNodes(),
+			selection: {
+				anchor: this.editorStateManager.state.selection.anchor!,
+				focus: this.editorStateManager.state.selection.focus!,
+			},
+		};
+
 		if (this.editorStateManager.state.selection.type === 'Range') {
 			this.editorStateManager.deleteSelectionRange();
 		}
 
-		this.writeBackup = this.editorStateManager.write(this.params.text);
-
-		return this.writeBackup != null;
+		return this.editorStateManager.write(this.params.text);
 	}
 
 	public override undo(): boolean {
-		if (!this.writeBackup) return false;
+		if (!this.undoable || !this.backup) return false;
 
-		const result = this.editorStateManager.deleteNodeText(
-			this.writeBackup.nodeKey,
-			this.writeBackup.offset,
-			this.writeBackup.offset + this.writeBackup.text.length
-		);
+		this.editorStateManager.setSelection(this.backup.selection)
+		this.editorStateManager.replaceNodes(this.backup.selectedNodes)
+		
+		this.undoed = true;
 
-		this.undoed = result;
-
-		return result;
+		return true;
 	}
 }
+
+/*
+
+beforeWrite: 1 offset 8 - 3 offset 3
+afterWrite: 1 ofset 9
+
+Hi
+how are you?
+I'm fine
+thanks
+=>
+Hi
+how are Znks
+
+--- Mi devo salvare la selection e questi nodi:
+you?
+I'm fine
+tha
+
+---Oppure potrei salvare la selection e tutti i nodi selected
+*/

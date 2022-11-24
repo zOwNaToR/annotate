@@ -1,5 +1,5 @@
 export type AnnotateNode = {
-	key: string
+	key: string;
 	type: 'text' | 'linebreak';
 	text?: string;
 };
@@ -10,4 +10,8 @@ export type AnnotateNodeWithSelectionInfo = AnnotateNode & {
 	isLastRow: boolean;
 	offsetStart?: number;
 	offsetEnd?: number;
+};
+
+export type AnnotateNodeWithIndexInfo = AnnotateNode & {
+	index: number;
 };

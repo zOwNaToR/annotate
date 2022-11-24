@@ -43,6 +43,6 @@ it('should delete previously inserted text', () => {
 	expect(executed).toBe(true);
 	expect(nodesArray[0].text).toBe('Lorem ipsum');
 	expect(writeCommand.undoed).toBe(true);
-	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 1 });
-	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 1 });
+	expect(editorState.selection.anchor).toEqual({ key: 'first', offset: 0 });
+	expect(editorState.selection.focus).toEqual({ key: 'first', offset: 0 });
 });

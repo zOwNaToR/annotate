@@ -1,6 +1,6 @@
-import { AnnotateNodeWithSelectionInfo } from '../types';
+import { AnnotateNodeWithIndexInfo, AnnotateNodeWithSelectionInfo } from '../types';
 import { isBetween, replaceText } from '../utils';
-import { Direction, EditorState, WriteBackup } from './types';
+import { Direction, EditorState } from './types';
 
 export class EditorStateManager {
 	public state: EditorState;
@@ -9,14 +9,56 @@ export class EditorStateManager {
 		this.state = state;
 	}
 
-	public write = (text: string): WriteBackup | null => {
+	public setSelection = (options: Parameters<typeof this.state.selection.set>[0]) =>
+		this.state.selection.set(options);
+
+	public replaceNodes = (newNodes: AnnotateNodeWithIndexInfo[]) => {
+		newNodes.forEach((newNode) => {
+			let node = this.findNode(newNode.key);
+
+			if (!node) {
+				this.state.nodes.splice(newNode.index, 0, newNode);
+
+				return;
+			}
+
+			node.text = newNode.text;
+			node.type = newNode.type;
+		});
+	};
+
+	public getSelectedNodes = (): AnnotateNodeWithIndexInfo[] => {
+		if (!this.state.selection.isSet()) return [];
+
+		if (this.state.selection.type === 'Caret') {
+			const anchorKey = this.state.selection.anchor!.key;
+			const anchorNodeIndex = this.findNodeIndex(anchorKey);
+			const anchorNode = this.state.nodes[anchorNodeIndex];
+
+			if (!anchorNode) return [];
+
+			return [{ ...anchorNode, index: anchorNodeIndex }];
+		}
+
+		const anchorIndex = this.findNodeIndex(this.state.selection.anchor!.key);
+		const focusIndex = this.findNodeIndex(this.state.selection.focus!.key);
+
+		return this.state.nodes
+			.map((node, index) => ({
+				...node,
+				index,
+			}))
+			.filter((node) => this.isNodeSelected(node.index, anchorIndex, focusIndex));
+	};
+
+	public write = (text: string): boolean => {
 		const anchor = this.state.selection.anchor;
 		const focus = this.state.selection.focus;
 
-		if (!anchor || !focus) return null;
+		if (!anchor || !focus) return false;
 
 		const anchorNode = this.findNode(anchor.key);
-		if (!anchorNode) return null;
+		if (!anchorNode) return false;
 
 		const startOffset = Math.min(anchor.offset ?? 0, focus.offset ?? 0);
 		const endOffset = Math.max(anchor.offset ?? 0, focus.offset ?? 0);
@@ -34,11 +76,7 @@ export class EditorStateManager {
 			},
 		});
 
-		return {
-			nodeKey: anchor.key,
-			offset: startOffset,
-			text,
-		};
+		return true;
 	};
 
 	public deleteSelectionRange = (): boolean => {
