@@ -33,7 +33,7 @@ export class WriteCommand extends BaseCommand {
 		};
 
 		if (this.editorState.selection.type === 'Range') {
-			this.editorUpdater.deleteSelectionRange();
+			this.editorUpdater.deleteSelection();
 		}
 
 		return this.editorUpdater.write(this.params.text);

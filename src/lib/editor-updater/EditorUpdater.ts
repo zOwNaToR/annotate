@@ -55,7 +55,7 @@ export class EditorUpdater {
 		return true;
 	};
 
-	public deleteSelectionRange = (): boolean => {
+	public deleteSelection = (): boolean => {
 		if (!this.state.canDeleteSelection()) return false;
 
 		const nodesInfo = this.state.getNodesSelectionInfo();
