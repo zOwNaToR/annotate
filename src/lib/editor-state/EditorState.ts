@@ -70,6 +70,18 @@ export class EditorState {
 		});
 	};
 
+	public getNodeInfo = (nodeKey: string): AnnotateNodeWithIndexInfo | null => {
+		const index = this.findNodeIndex(nodeKey);
+		if (index < 0 || index > this.nodes.length) return null;
+
+		const node = this.nodes[index];
+
+		return {
+			...node,
+			index,
+		};
+	};
+
 	public mergeNodes = (startNodeKey: string, endNodeKey: string) => {
 		const startNode = this.findNode(startNodeKey);
 		const endNode = this.findNode(endNodeKey);
@@ -121,5 +133,12 @@ export class EditorState {
 				index,
 			}))
 			.filter((node) => this.isNodeSelected(node.index, anchorIndex, focusIndex));
+	};
+
+	public getPreviousNode = (nodeKey: string): AnnotateNode | null => {
+		const index = this.findNodeIndex(nodeKey);
+		if (index < 0 || index > this.nodes.length) return null;
+
+		return this.nodes[index - 1];
 	};
 }

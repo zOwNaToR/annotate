@@ -1,5 +1,5 @@
 import { EditorState } from '../editor-state/EditorState';
-import { AnnotateNodeWithIndexInfo } from '../types';
+import { AnnotateNode, AnnotateNodeWithIndexInfo } from '../types';
 import { replaceText } from '../utils';
 
 export class EditorUpdater {
@@ -100,6 +100,66 @@ export class EditorUpdater {
 			focus: {
 				key: newSelection.key,
 				offset: newSelection.offsetStart!,
+			},
+		});
+
+		return true;
+	};
+
+	public deleteChar = (): boolean => {
+		if (!this.state.selection.isSet()) return false;
+
+		const selectedNode = this.state.selection.anchor!;
+		const selectedNodeInfo = this.state.getNodeInfo(selectedNode.key)!;
+
+		let newSelection = {
+			key: selectedNode.key,
+			offset: selectedNode.offset,
+		};
+
+		const shouldDeleteText = selectedNode.offset > 0;
+		const shouldDeleteNode =
+			!shouldDeleteText && selectedNodeInfo.index !== 0 && !selectedNodeInfo.text?.length;
+		const shouldMergeNode =
+			!shouldDeleteText && selectedNodeInfo.index !== 0 && !!selectedNodeInfo.text?.length;
+
+		if (shouldDeleteText) {
+			newSelection = {
+				key: selectedNode.key,
+				offset: selectedNode.offset - 1,
+			};
+
+			this.state.deleteNodeText(selectedNode.key, selectedNode.offset, selectedNode.offset - 1);
+		} else if (shouldDeleteNode) {
+			const previousNode = this.state.getPreviousNode(selectedNode.key);
+			if (!previousNode) return false;
+
+			newSelection = {
+				key: previousNode.key,
+				offset: previousNode.text?.length ?? 0,
+			};
+
+			this.state.deleteNode(selectedNode.key);
+		} else if (shouldMergeNode) {
+			const previousNode = this.state.getPreviousNode(selectedNode.key);
+			if (!previousNode) return false;
+
+			newSelection = {
+				key: previousNode.key,
+				offset: previousNode.text?.length ?? 0,
+			};
+
+			this.state.mergeNodes(selectedNode.key, previousNode.key);
+		}
+
+		this.state.selection.set({
+			anchor: {
+				key: selectedNode.key,
+				offset: newSelection.offset,
+			},
+			focus: {
+				key: selectedNode.key,
+				offset: newSelection.offset,
 			},
 		});
 
